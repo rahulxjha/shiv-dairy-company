@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShivDairyCompanyApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ShivDairyCompanyApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ShivDairyCompanyApplication.class, args);
+    }
 
 }

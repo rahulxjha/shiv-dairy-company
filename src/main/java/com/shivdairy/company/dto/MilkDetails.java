@@ -28,7 +28,7 @@ public class MilkDetails {
     @Column(name = "supplier_milk_payment")
     private Double milkPayment;
 
-    public Map<String, String> toMap(){
+    public Map<String, String> toMap() {
         Map<String, String> milkMap = new HashMap<>();
         if (id != null) milkMap.put("id", id.toString());
         if (milkType != null) milkMap.put("milkType", milkType.toString());

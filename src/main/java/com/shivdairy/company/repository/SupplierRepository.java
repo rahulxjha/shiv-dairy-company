@@ -23,24 +23,24 @@ public class SupplierRepository {
     }
 
     @Transactional
-    public SupplierDTO save(SupplierDTO supplier){
+    public SupplierDTO save(SupplierDTO supplier) {
         SupplierDTO supplierRes = update(supplier);
         log.info("supplier {}", supplierRes);
         return supplierRes;
     }
 
-    public SupplierDTO findById(Integer id){
+    public SupplierDTO findById(Integer id) {
         return entityManager.find(SupplierDTO.class, id);
     }
 
-    public List<SupplierDTO> findAll(){
+    public List<SupplierDTO> findAll() {
         TypedQuery<SupplierDTO> query = entityManager.createQuery("FROM Supplier", SupplierDTO.class);
         List<SupplierDTO> supplierList = query.getResultList();
         log.info("supplierList {}", supplierList);
         return supplierList;
     }
 
-    public List<SupplierDTO> findByName(String name){
+    public List<SupplierDTO> findByName(String name) {
         TypedQuery<SupplierDTO> query = entityManager.createQuery("FROM Supplier WHERE name LIKE :name", SupplierDTO.class);
         query.setParameter("name", name);
         List<SupplierDTO> supplierList = query.getResultList();
@@ -49,7 +49,7 @@ public class SupplierRepository {
     }
 
     @Transactional
-    public SupplierDTO update(SupplierDTO supplier){
+    public SupplierDTO update(SupplierDTO supplier) {
         supplier.setUpdatedDt(Date.valueOf(LocalDate.now()));
         log.info("supplier:{}", supplier);
         return entityManager.merge(supplier);

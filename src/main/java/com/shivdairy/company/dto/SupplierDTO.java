@@ -34,7 +34,7 @@ public class SupplierDTO {
     @Column
     private Boolean isDeleted;
 
-    public Map<String, String> toMap(){
+    public Map<String, String> toMap() {
         Map<String, String> supplierMap = new HashMap<>();
         if (id != null) supplierMap.put("id", id.toString());
         if (name != null) supplierMap.put("name", name);

@@ -12,4 +12,6 @@ public interface SupplierService {
     SupplierDTO partialUpdate(Integer id, SupplierDTO supplierDTO);
 
     SupplierDTO save(SupplierDTO supplierDTO);
+
+    SupplierDTO delete(Integer id);
 }

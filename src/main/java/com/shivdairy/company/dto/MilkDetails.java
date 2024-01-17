@@ -19,6 +19,8 @@ public class MilkDetails {
     private Double milkAmount;
     @Column(name = "milk_fat", nullable = false)
     private Double fat;
+    @Column(name = "milk_clr", nullable = false)
+    private Double clr;
     @Column(name = "milk_snf")
     private Double snf;
     @Column(name = "milk_rate", nullable = false)

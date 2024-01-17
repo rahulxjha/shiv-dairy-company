@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -17,6 +17,8 @@ import java.util.List;
 public class SupplierRepository {
     @Autowired
     private EntityManager entityManager;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private LocalDateTime dateTime = LocalDateTime.now();
 
     public SupplierRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -24,6 +26,7 @@ public class SupplierRepository {
 
     @Transactional
     public SupplierDTO save(SupplierDTO supplier) {
+        supplier.setCreatedDt(dateTime);
         SupplierDTO supplierRes = update(supplier);
         log.info("supplier {}", supplierRes);
         return supplierRes;
@@ -33,33 +36,37 @@ public class SupplierRepository {
         return entityManager.find(SupplierDTO.class, id);
     }
 
-    public List<SupplierDTO> findAll() {
-        TypedQuery<SupplierDTO> query = entityManager.createQuery("FROM Supplier", SupplierDTO.class);
+    public List<SupplierDTO> search() {
+        TypedQuery<SupplierDTO> query =
+                entityManager.createQuery("FROM SupplierDTO WHERE isDeleted = FALSE", SupplierDTO.class);
         List<SupplierDTO> supplierList = query.getResultList();
         log.info("supplierList {}", supplierList);
         return supplierList;
     }
 
-    public List<SupplierDTO> findByName(String name) {
-        TypedQuery<SupplierDTO> query = entityManager.createQuery("FROM Supplier WHERE name LIKE :name", SupplierDTO.class);
-        query.setParameter("name", name);
-        List<SupplierDTO> supplierList = query.getResultList();
+    public SupplierDTO findByPhoneNum(String phoneNum) {
+        TypedQuery<SupplierDTO> query = entityManager
+                .createQuery("FROM SupplierDTO WHERE phoneNum LIKE :phoneNum", SupplierDTO.class);
+        query.setParameter("phoneNum", phoneNum);
+        SupplierDTO supplierList = query.getSingleResult();
         log.info("supplierList {}", supplierList);
         return supplierList;
     }
 
     @Transactional
     public SupplierDTO update(SupplierDTO supplier) {
-        supplier.setUpdatedDt(Date.valueOf(LocalDate.now()));
+        supplier.setUpdatedDt(dateTime);
         log.info("supplier:{}", supplier);
         return entityManager.merge(supplier);
     }
 
     @Transactional
-    public void deleteById(Integer id) {
+    public SupplierDTO deleteById(Integer id) {
         SupplierDTO supplier = findById(id);
+        supplier.setDeleted_dt(dateTime);
         supplier.setIsDeleted(Boolean.TRUE);
         log.info("Supplier soft deletion completed");
+        return supplier;
     }
 
 }

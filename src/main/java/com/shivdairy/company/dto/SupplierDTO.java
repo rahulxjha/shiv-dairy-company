@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,13 +26,15 @@ public class SupplierDTO {
     private String address;
     @CreatedDate
     @Column(name = "created_dt", nullable = false)
-    private Date createdDt;
+    private LocalDateTime createdDt;
     @Column(name = "updated_dt")
-    private Date updatedDt;
+    private LocalDateTime updatedDt;
     @Column(name = "supplier_payment_status")
-    private PaymentStatus paymentStatus;
+    private PaymentStatus paymentStatus = PaymentStatus.NOT_DONE;
     @Column
-    private Boolean isDeleted;
+    private Boolean isDeleted = Boolean.FALSE;
+    @Column
+    private LocalDateTime deleted_dt;
 
     public Map<String, String> toMap() {
         Map<String, String> supplierMap = new HashMap<>();

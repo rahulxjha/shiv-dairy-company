@@ -16,6 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SupplierServiceImpl implements SupplierService {
+
     private final SupplierRepository supplierRepository;
 
     @Value("${supplier.notFound.exception.message}")
@@ -23,7 +24,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public SupplierDTO findById(Integer id) {
-        log.info("Call QuoteServiceImpl.findById({}) ", id);
+        log.info("inside SupplierServiceImpl.findById({}) ", id);
         SupplierDTO supplierDTO = supplierRepository.findById(id);
         if (supplierDTO == null)
             throw new NoItemFoundException(String.format(supplierNoteFoundException, id));
@@ -32,17 +33,38 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public List<SupplierDTO> search() {
-
-        return null;
+        log.info("inside SupplierServiceImpl.search");
+        List<SupplierDTO> supplierDTOS = supplierRepository.search();
+        if (supplierDTOS.isEmpty())
+            throw new NoItemFoundException(supplierNoteFoundException);
+        else return supplierDTOS;
     }
 
     @Override
     public SupplierDTO partialUpdate(Integer id, SupplierDTO supplierDTO) {
-        return null;
+        log.info("inside SupplierServiceImpl.partialUpdate({}, {})", id, supplierDTO);
+        return supplierRepository.update(supplierDTO);
     }
 
     @Override
     public SupplierDTO save(SupplierDTO supplierDTO) {
-        return null;
+        log.info("inside SupplierServiceImpl.save{} ", supplierDTO);
+        SupplierDTO dbSupplier = supplierRepository.findByPhoneNum(supplierDTO.getPhoneNum());
+        if (!dbSupplier.toMap().isEmpty()){
+            log.info("Found existing supplier with id: {}, name: '{}', created_dt: {}",
+                    dbSupplier.getId(), dbSupplier.getName(), dbSupplier.getCreatedDt());
+            return dbSupplier;
+        }
+        else {
+            log.info("Creating new supplier for '{}', {} ", supplierDTO.getName(), supplierDTO.getPhoneNum());
+            return supplierRepository.save(supplierDTO);
+        }
     }
+
+    @Override
+    public SupplierDTO delete(Integer id) {
+        return supplierRepository.deleteById(id);
+    }
+
+
 }

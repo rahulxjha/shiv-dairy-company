@@ -40,4 +40,11 @@ public class SupplierApi {
         log.info("calling partialUpdate: /api/v1/supplier/{} with RequestBody {}", id, partialUpdate);
         return ResponseEntity.ok(supplierService.partialUpdate(id, partialUpdate));
     }
+
+    @DeleteMapping("/supplier/{id}")
+    public ResponseEntity<SupplierDTO> delete(@PathVariable Integer id){
+        log.info("calling delete: /api/v1/supplier/{}", id);
+        return ResponseEntity.ok(supplierService.delete(id));
+    }
+
 }

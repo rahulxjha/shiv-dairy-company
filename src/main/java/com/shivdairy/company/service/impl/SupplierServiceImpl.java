@@ -50,7 +50,7 @@ public class SupplierServiceImpl implements SupplierService {
     public SupplierDTO save(SupplierDTO supplierDTO) {
         log.info("inside SupplierServiceImpl.save{} ", supplierDTO);
         SupplierDTO dbSupplier = supplierRepository.findByPhoneNum(supplierDTO.getPhoneNum());
-        if (!dbSupplier.toMap().isEmpty()){
+        if (dbSupplier != null){
             log.info("Found existing supplier with id: {}, name: '{}', created_dt: {}",
                     dbSupplier.getId(), dbSupplier.getName(), dbSupplier.getCreatedDt());
             return dbSupplier;

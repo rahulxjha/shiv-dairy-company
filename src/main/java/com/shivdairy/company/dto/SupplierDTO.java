@@ -33,8 +33,8 @@ public class SupplierDTO {
     private PaymentStatus paymentStatus = PaymentStatus.NOT_DONE;
     @Column
     private Boolean isDeleted = Boolean.FALSE;
-    @Column
-    private LocalDateTime deleted_dt;
+    @Column(name = "deleted_dt")
+    private LocalDateTime deletedDt;
 
     public Map<String, String> toMap() {
         Map<String, String> supplierMap = new HashMap<>();

@@ -27,7 +27,8 @@ public class SupplierRepository {
     @Transactional
     public SupplierDTO save(SupplierDTO supplier) {
         supplier.setCreatedDt(dateTime);
-        SupplierDTO supplierRes = update(supplier);
+        entityManager.persist(supplier);
+        SupplierDTO supplierRes = findById(supplier.getId());
         log.info("supplier {}", supplierRes);
         return supplierRes;
     }
@@ -54,19 +55,33 @@ public class SupplierRepository {
     }
 
     @Transactional
-    public SupplierDTO update(SupplierDTO supplier) {
-        supplier.setUpdatedDt(dateTime);
-        log.info("supplier:{}", supplier);
-        return entityManager.merge(supplier);
+    public SupplierDTO update(SupplierDTO supplierDTO) {
+        SupplierDTO supplier = findById(supplierDTO.getId());
+        if (!supplier.getIsDeleted()){
+            supplier.setCreatedDt(supplier.getCreatedDt());
+            supplier.setUpdatedDt(dateTime);
+            log.info("supplier:{}", supplierDTO);
+            return entityManager.merge(supplierDTO);
+        } else {
+            log.info("Aborting update as data is deleted");
+            return supplier;
+        }
+
     }
 
     @Transactional
     public SupplierDTO deleteById(Integer id) {
         SupplierDTO supplier = findById(id);
-        supplier.setDeleted_dt(dateTime);
-        supplier.setIsDeleted(Boolean.TRUE);
-        log.info("Supplier soft deletion completed");
-        return supplier;
+        if (!supplier.getIsDeleted()){
+            supplier.setDeletedDt(dateTime);
+            supplier.setIsDeleted(Boolean.TRUE);
+            log.info("Supplier soft deletion completed");
+            return supplier;
+        } else {
+            log.info("Aborting soft deletion as this data is already deleted");
+            return supplier;
+        }
+
     }
 
 }

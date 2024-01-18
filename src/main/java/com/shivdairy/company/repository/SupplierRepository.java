@@ -1,11 +1,13 @@
 package com.shivdairy.company.repository;
 
 import com.shivdairy.company.dto.SupplierDTO;
+import com.shivdairy.company.exception.NoItemFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -18,7 +20,9 @@ public class SupplierRepository {
     @Autowired
     private EntityManager entityManager;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private LocalDateTime dateTime = LocalDateTime.now();
+    private final LocalDateTime dateTime = LocalDateTime.parse(LocalDateTime.now().format(formatter));
+    @Value("${supplier.notFound.exception.message}")
+    private String supplierNotFoundException;
 
     public SupplierRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -57,31 +61,22 @@ public class SupplierRepository {
     @Transactional
     public SupplierDTO update(SupplierDTO supplierDTO) {
         SupplierDTO supplier = findById(supplierDTO.getId());
-        if (!supplier.getIsDeleted()){
-            supplier.setCreatedDt(supplier.getCreatedDt());
+        if (supplier != null && !supplier.getIsDeleted()) {
             supplier.setUpdatedDt(dateTime);
-            log.info("supplier:{}", supplierDTO);
-            return entityManager.merge(supplierDTO);
-        } else {
-            log.info("Aborting update as data is deleted");
-            return supplier;
-        }
-
+            log.info("Updating supplier: {}", supplierDTO);
+            return entityManager.merge(supplier);
+        }else throw new NoItemFoundException(String.format(supplierNotFoundException, supplierDTO.getId()));
     }
 
     @Transactional
     public SupplierDTO deleteById(Integer id) {
         SupplierDTO supplier = findById(id);
-        if (!supplier.getIsDeleted()){
+        if (supplier != null && !supplier.getIsDeleted()) {
             supplier.setDeletedDt(dateTime);
-            supplier.setIsDeleted(Boolean.TRUE);
-            log.info("Supplier soft deletion completed");
-            return supplier;
-        } else {
-            log.info("Aborting soft deletion as this data is already deleted");
-            return supplier;
-        }
-
+            supplier.setIsDeleted(true);
+            log.info("Soft deletion completed for supplier with ID: {}", id);
+            return entityManager.merge(supplier);
+        } else throw new NoItemFoundException(String.format(supplierNotFoundException, id));
     }
 
 }

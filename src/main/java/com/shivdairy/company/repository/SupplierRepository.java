@@ -19,7 +19,7 @@ import java.util.List;
 public class SupplierRepository {
     @Autowired
     private EntityManager entityManager;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private final LocalDateTime dateTime = LocalDateTime.parse(LocalDateTime.now().format(formatter));
     @Value("${supplier.notFound.exception.message}")
     private String supplierNotFoundException;

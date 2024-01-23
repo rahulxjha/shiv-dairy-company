@@ -9,9 +9,10 @@ import java.util.Map;
 @Entity
 @Data
 @Table(name = "milk_details")
-public class MilkDetails {
+public class MilkDetailsDTO {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "milk_sequence")
+    @SequenceGenerator(name = "milk_sequence", sequenceName = "milk_sequence", initialValue = 1011, allocationSize = 1)
     private Long id;
     @Column(name = "milk_type", nullable = false)
     private MilkType milkType;

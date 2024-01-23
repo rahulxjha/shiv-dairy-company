@@ -49,4 +49,17 @@ public class SupplierDTO {
         return supplierMap;
     }
 
+    public SupplierDTO toEntity() {
+        SupplierDTO entity = new SupplierDTO();
+        entity.setId(this.id);
+        entity.setName(this.name);
+        entity.setPhoneNum(this.phoneNum);
+        entity.setEmail(this.email);
+        entity.setAddress(this.address);
+        entity.setCreatedDt(this.getCreatedDt());
+        entity.setUpdatedDt(this.updatedDt);
+        entity.setPaymentStatus(this.paymentStatus);
+        entity.setDeletedDt(this.deletedDt);
+        return entity;
+    }
 }

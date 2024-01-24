@@ -1,7 +1,12 @@
 package com.shivdairy.company.dto;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -16,13 +21,22 @@ public class SupplierDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Integer id;
-    @Column(name = "supplier_name", nullable = false, length = 50)
+    @Column(name = "supplier_name")
+    @NotBlank(message = "Invalid or missing Supplier Name")
+    @Length(max = 50)
     private String name;
     @Column(name = "phone_num", nullable = false, length = 10)
+    @NotNull(message = "Invalid or missing Phone Number")
+    @Pattern(regexp = "^(\\+91|0)?[6789]\\d{9}$", message = "Invalid or missing Phone Number")
     private String phoneNum;
-    @Column(name = "supplier_email", length = 50, unique = true)
+    @Column(name = "supplier_email", unique = true)
+    @Length(max = 256)
+    @Email(message = "Invalid or missing Contact Email.", regexp = "^[A-Za-z0-9+_.-]+@(.+)$")
+    @NotBlank(message = "Invalid or missing Contact Email.")
     private String email;
-    @Column(name = "address", nullable = false, length = 150)
+    @Column(name = "address", nullable = false)
+    @NotBlank(message = "Invalid or missing Supplier Address")
+    @Length(max = 150)
     private String address;
     @CreatedDate
     @Column(name = "created_dt", nullable = false)

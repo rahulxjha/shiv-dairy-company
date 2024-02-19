@@ -9,14 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping(value = "public/api/v1")
 public class SupplierApi {
     private static final String SUPPLIER_FOUND = "Supplier found successfully";
-    private static final String SUPPLIER_SEARCHED = "Supplier searched successfully";
+    private static final String SUPPLIER_EXCEL_GENERATED = "Supplier excel generated successfully";
     private static final String SUPPLIER_CREATED = "Supplier created successfully";
     private static final String SUPPLIER_UPDATED = "Supplier updated successfully";
     private static final String SUPPLIER_DELETED = "Supplier deleted successfully";
@@ -31,13 +29,12 @@ public class SupplierApi {
         return ResponseEntity.ok(baseResponseDTO);
     }
 
-    @GetMapping("/supplier/search")
-    public ResponseEntity<BaseResponseDTO<List<SupplierDTO>>> search() {
-        log.info("calling search: /api/v1/supplier/search");
-        List<SupplierDTO> suppliers = supplierService.search();
-        log.info("Supplier List {}", suppliers);
-        BaseResponseDTO<List<SupplierDTO>> baseResponseDTO = new BaseResponseDTO<>(SUPPLIER_SEARCHED, suppliers);
-        return ResponseEntity.ok(baseResponseDTO);
+    @GetMapping("/supplier/downloadExcel")
+    public ResponseEntity<String> downloadExcel() {
+        log.info("calling downloadExcel: /api/v1/supplier/downloadExcel");
+        supplierService.downloadExcel();
+        log.info("Supplier excel file downloaded");
+        return ResponseEntity.ok("Supplier excel file downloaded.");
     }
 
     @PostMapping("/supplier")

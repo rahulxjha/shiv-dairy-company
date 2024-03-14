@@ -1,5 +1,6 @@
 package com.shivdairy.company.dto;
 
+import com.shivdairy.company.model.MilkDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -61,7 +62,7 @@ public class SupplierDTO {
     private LocalDateTime deletedDt;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier")
-    private List<MilkDetailsDTO> milkDetailsDTO;
+    private List<MilkDetails> milkDetailsDTO;
 
     public Map<String, String> toMap() {
         Map<String, String> supplierMap = new HashMap<>();

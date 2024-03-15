@@ -51,7 +51,7 @@ public class MilkServiceImpl implements MilkService {
     }
 
     private Double calculateSnfAmount(Double snfKg, Double snfRate){
-        log.info("inside MilkServiceImpl.calculateFatAmount: {} {}", snfKg, snfRate);
+        log.info("inside MilkServiceImpl.calculateSnfAmount: {} {}", snfKg, snfRate);
         return snfKg * snfRate;
     }
 }

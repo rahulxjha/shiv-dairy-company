@@ -1,14 +1,13 @@
 package com.shivdairy.company.controller;
 
+import com.shivdairy.company.dto.BaseResponseDTO;
+import com.shivdairy.company.dto.MilkDetailsRequestDTO;
 import com.shivdairy.company.service.MilkService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -16,14 +15,13 @@ import java.util.Map;
 public class MilkCalcApi {
     @Autowired
     private MilkService milkService;
+    private static final String TOTAL_PAYMENT_CALCULATED = "Total payment calculated successfully.";
 
     @GetMapping("/totalPayAmount")
-    public Double getTotalPayAmount(@RequestParam Map<String, String> params){
-        log.info("Requesting for api/v1/totalPayAmount with RequestParam: {}", params);
-        Double milkWeight = Double.valueOf(params.get("milkWeight"));
-        Double fat = Double.valueOf(params.get("fat"));
-        Double clr = Double.valueOf(params.get("clr"));
-        Double milkRate = Double.valueOf(params.get("milkRate"));
-        return milkService.totalPayAmount(milkWeight, fat, clr, milkRate);
+    public ResponseEntity<BaseResponseDTO<Double>> getTotalPayAmount(@Valid @RequestBody MilkDetailsRequestDTO milkDetails){
+        log.info("Requesting for api/v1/totalPayAmount with RequestBody: {}", milkDetails);
+        Double theTotalPayAmount = milkService.totalPayAmount(milkDetails.getMilkWeight(), milkDetails.getFat(), milkDetails.getClr(), milkDetails.getMilkRate());
+        BaseResponseDTO<Double> totalPayAmountResponse = new BaseResponseDTO<>(TOTAL_PAYMENT_CALCULATED, theTotalPayAmount);
+        return ResponseEntity.ok(totalPayAmountResponse);
     }
 }

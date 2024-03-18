@@ -1,5 +1,8 @@
 package com.shivdairy.company.service.impl;
 
+import com.shivdairy.company.dto.MilkDetailsRequestDTO;
+import com.shivdairy.company.dto.MilkType;
+import com.shivdairy.company.model.MilkDetails;
 import com.shivdairy.company.service.MilkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -7,17 +10,46 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class MilkServiceImpl implements MilkService {
+    private Double fatKg;
+    private Double snfPercent;
+    private Double snfKg;
+    private Double fatRate;
+    private Double snfRate;
+    private Double fatAmount;
+    private Double snfAmount;
+    private Double theTotalPayAmount;
+
     @Override
-    public Double totalPayAmount(Double milkWeight, Double fat, Double clr, Double milkRate) {
-        log.info("inside MilkServiceImpl.totalPayAmount: {} {} {}", milkWeight, fat, clr);
-        Double fatKg = calculateFatKg(milkWeight, fat);
-        Double snfPercent = calculateSnfPercent(clr, fat);
-        Double snfKg = calculateSnfKg(milkWeight, snfPercent);
-        Double fatRate = calculateFatRate(milkRate);
-        Double snfRate = calculateSnfRate(milkRate);
-        Double fatAmount = calculateFatAmount(fatKg, fatRate);
-        Double snfAmount = calculateSnfAmount(snfKg, snfRate);
-        return fatAmount + snfAmount;
+    public MilkDetails calculateMilkProperty(MilkDetailsRequestDTO milkDetails) {
+        log.info("inside MilkServiceImpl.calculateMilkProperty: {}", milkDetails);
+        fatKg = calculateFatKg(milkDetails.getMilkWeight(), milkDetails.getFat());
+        snfPercent = calculateSnfPercent(milkDetails.getClr(), milkDetails.getFat());
+        snfKg = calculateSnfKg(milkDetails.getMilkWeight(), snfPercent);
+        fatRate = calculateFatRate(milkDetails.getMilkRate());
+        snfRate = calculateSnfRate(milkDetails.getMilkRate());
+        fatAmount = calculateFatAmount(fatKg, fatRate);
+        snfAmount = calculateSnfAmount(snfKg, snfRate);
+        theTotalPayAmount = fatAmount + snfAmount;
+        MilkDetails milkDetailsModel = getMilkDetailsModel(milkDetails);
+        return milkDetailsModel;
+    }
+
+    private MilkDetails getMilkDetailsModel (MilkDetailsRequestDTO milkDetails) {
+        MilkDetails milkDetailsModel = new MilkDetails();
+        milkDetailsModel.setMilkType(MilkType.BUFFALO);
+        milkDetailsModel.setFatKg(fatKg);
+        milkDetailsModel.setSnfPercent(snfPercent);
+        milkDetailsModel.setSnfKg(snfKg);
+        milkDetailsModel.setFatRate(fatRate);
+        milkDetailsModel.setSnfRate(snfRate);
+        milkDetailsModel.setFatAmount(fatAmount);
+        milkDetailsModel.setSnfAmount(snfAmount);
+        milkDetailsModel.setMilkPayment(theTotalPayAmount);
+        milkDetailsModel.setMilkRate(milkDetails.getMilkRate());
+        milkDetailsModel.setFat(milkDetails.getFat());
+        milkDetailsModel.setClr(milkDetails.getClr());
+        milkDetailsModel.setMilkWeight(milkDetails.getMilkWeight());
+        return milkDetailsModel;
     }
 
     private Double calculateFatKg(Double milkWeight, Double fat){

@@ -1,5 +1,8 @@
 package com.shivdairy.company.service;
 
+import com.shivdairy.company.dto.MilkDetailsRequestDTO;
+import com.shivdairy.company.model.MilkDetails;
+
 public interface MilkService {
-    Double totalPayAmount(Double milkWeight, Double fat, Double clr, Double milkRate);
+    MilkDetails calculateMilkProperty(MilkDetailsRequestDTO milkDetails);
 }

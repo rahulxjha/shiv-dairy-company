@@ -62,7 +62,7 @@ public class SupplierDTO {
     private LocalDateTime deletedDt;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier")
-    private List<MilkDetails> milkDetailsDTO;
+    private List<MilkDetails> milkDetails;
 
     public Map<String, String> toMap() {
         Map<String, String> supplierMap = new HashMap<>();

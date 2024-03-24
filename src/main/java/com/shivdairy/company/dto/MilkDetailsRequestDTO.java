@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MilkDetailsRequestDTO {
+    private String name;
     @NotNull(message = "Milk Weight should not be null.")
     private Double milkWeight;
     @NotNull(message = "Fat should not be null.")

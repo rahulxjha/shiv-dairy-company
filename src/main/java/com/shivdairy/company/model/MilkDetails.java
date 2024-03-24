@@ -20,6 +20,9 @@ public class MilkDetails {
     @Column(name = "milk_type", nullable = false)
     private MilkType milkType;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "milk_weight", nullable = false)
     private Double milkWeight;
 

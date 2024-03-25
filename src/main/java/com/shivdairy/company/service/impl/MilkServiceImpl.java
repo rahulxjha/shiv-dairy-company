@@ -61,10 +61,10 @@ public class MilkServiceImpl implements MilkService {
         return (milkWeight * snfPercent) / 10000;
     }
 
-    private double calculateFatRate(Double milkRate){
+    private Double calculateFatRate(Double milkRate){
         log.info("inside MilkServiceImpl.calculateFatRate: {}", milkRate);
         Double fatRate = (milkRate * 60) / 6.5;
-        double roundOfFatRate = (double) Math.round(fatRate * 100) ;
+        Double roundOfFatRate = (double) Math.round(fatRate * 100) ;
         return roundOfFatRate/ 100;
     }
 

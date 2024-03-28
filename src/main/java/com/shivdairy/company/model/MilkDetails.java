@@ -29,8 +29,8 @@ public class MilkDetails {
     @Column(name = "milk_fat", nullable = false)
     private Double fat;
 
-    @Column(name = "fat_kg")
-    private Double fatKg;
+    @Column(name = "fat_weight")
+    private Double fatWeight;
 
     @Column(name = "fat_rate")
     private Double fatRate;
@@ -41,8 +41,8 @@ public class MilkDetails {
     @Column(name = "milk_clr", nullable = false)
     private Double clr;
 
-    @Column(name = "snf_kg")
-    private Double snfKg;
+    @Column(name = "snf_weight")
+    private Double snfWeight;
 
     @Column(name = "snf_percent")
     private Double snfPercent;
@@ -72,11 +72,11 @@ public class MilkDetails {
         if (milkType != null) milkMap.put("milkType", milkType.toString());
         if (milkWeight != null) milkMap.put("milkAmount", milkWeight.toString());
         if (fat != null) milkMap.put("fat", fat.toString());
-        if (fatKg != null) milkMap.put("fatKg", fatKg.toString());
+        if (fatWeight != null) milkMap.put("fatWeight", fatWeight.toString());
         if (fatAmount != null) milkMap.put("fatAmount", fatAmount.toString());
         if (fatRate != null) milkMap.put("fatRate", fatRate.toString());
         if (clr != null) milkMap.put("clr", clr.toString());
-        if (snfKg != null) milkMap.put("snf", snfKg.toString());
+        if (snfWeight != null) milkMap.put("snf", snfWeight.toString());
         if (snfAmount != null) milkMap.put("snfAmount", snfAmount.toString());
         if (snfPercent != null) milkMap.put("snfPercent", snfPercent.toString());
         if (snfRate != null) milkMap.put("snfRate", snfRate.toString());

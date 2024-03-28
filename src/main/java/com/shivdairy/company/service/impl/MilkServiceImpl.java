@@ -48,47 +48,45 @@ public class MilkServiceImpl implements MilkService {
 
     private Double calculateFatWeight(Double milkWeight, Double fat){
         log.info("inside MilkServiceImpl.calculateFatWeight: {} {}", milkWeight, fat);
-        return (milkWeight * fat) / 1000;
+        return round((milkWeight * fat / 1000.0));
     }
 
     private Double calculateSnfPercent(Double clr, Double fat){
         log.info("inside MilkServiceImpl.calculateSnfPercent: {} {}", clr, fat);
-        return (clr * 25) + 14 + fat * 2;
+        return round((clr * 25) + 14 + fat * 2);
     }
 
     private Double calculateSnfWeight (Double milkWeight, Double snfPercent){
         log.info("inside MilkServiceImpl.calculateSnfWeight: {} {}", milkWeight, snfPercent);
-        return (milkWeight * snfPercent) / 10000;
+        return round((milkWeight * snfPercent) / 10000);
     }
 
     private Double calculateFatRate(Double milkRate){
         log.info("inside MilkServiceImpl.calculateFatRate: {}", milkRate);
-        Double fatRate = (milkRate * 60) / 6.5;
-        Double roundOfFatRate = (double) Math.round(fatRate * 100) ;
-        return roundOfFatRate/ 100;
+        return round((milkRate * 60 / 6.5));
     }
 
     private Double calculateSnfRate(Double milkRate){
         log.info("inside MilkServiceImpl.calculateSnfRate: {}", milkRate);
-        return (milkRate * 40) / 8.5;
+        return round((milkRate * 40 / 8.5));
     }
 
-    private Double calculateFatAmount(Double fatKg, Double fatRate){
-        log.info("inside MilkServiceImpl.calculateFatAmount: {} {}", fatRate, fatKg);
-        return fatKg * fatRate;
+    private Double calculateFatAmount(Double fatWeight, Double fatRate){
+        log.info("inside MilkServiceImpl.calculateFatAmount: {} {}", fatRate, fatWeight);
+        return round(fatWeight * fatRate);
     }
 
-    private Double calculateSnfAmount(Double snfKg, Double snfRate){
-        log.info("inside MilkServiceImpl.calculateSnfAmount: {} {}", snfKg, snfRate);
-        return snfKg * snfRate;
+    private Double calculateSnfAmount(Double snfWeight, Double snfRate){
+        log.info("inside MilkServiceImpl.calculateSnfAmount: {} {}", snfWeight, snfRate);
+        return round(snfWeight * snfRate);
     }
 
     private MilkDetails getMilkDetailsModel (MilkDetailsRequestDTO milkDetails) {
         MilkDetails milkDetailsModel = new MilkDetails();
         milkDetailsModel.setMilkType(MilkType.BUFFALO);
-        milkDetailsModel.setFatKg(fatWeight);
+        milkDetailsModel.setFatWeight(fatWeight);
         milkDetailsModel.setSnfPercent(snfPercent);
-        milkDetailsModel.setSnfKg(snfWeight);
+        milkDetailsModel.setSnfWeight(snfWeight);
         milkDetailsModel.setFatRate(fatRate);
         milkDetailsModel.setSnfRate(snfRate);
         milkDetailsModel.setFatAmount(fatAmount);
@@ -100,5 +98,9 @@ public class MilkServiceImpl implements MilkService {
         milkDetailsModel.setMilkWeight(milkDetails.getMilkWeight());
         milkDetailsModel.setName(milkDetails.getName());
         return milkDetailsModel;
+    }
+
+    private Double round(Double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 }

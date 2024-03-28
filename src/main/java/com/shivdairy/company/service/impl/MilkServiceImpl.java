@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 public class MilkServiceImpl implements MilkService {
     @Autowired
     private MilkRepository milkRepository;
-    private Double fatKg;
+    private Double fatWeight;
     private Double snfPercent;
-    private Double snfKg;
+    private Double snfWeight;
     private Double fatRate;
     private Double snfRate;
     private Double fatAmount;
@@ -29,13 +29,13 @@ public class MilkServiceImpl implements MilkService {
     @Override
     public MilkDetails calculateMilkProperty(MilkDetailsRequestDTO milkDetails) {
         log.info("inside MilkServiceImpl.calculateMilkProperty: {}", milkDetails);
-        fatKg = calculateFatKg(milkDetails.getMilkWeight(), milkDetails.getFat());
+        fatWeight = calculateFatWeight(milkDetails.getMilkWeight(), milkDetails.getFat());
         snfPercent = calculateSnfPercent(milkDetails.getClr(), milkDetails.getFat());
-        snfKg = calculateSnfKg(milkDetails.getMilkWeight(), snfPercent);
+        snfWeight = calculateSnfWeight(milkDetails.getMilkWeight(), snfPercent);
         fatRate = calculateFatRate(milkDetails.getMilkRate());
         snfRate = calculateSnfRate(milkDetails.getMilkRate());
-        fatAmount = calculateFatAmount(fatKg, fatRate);
-        snfAmount = calculateSnfAmount(snfKg, snfRate);
+        fatAmount = calculateFatAmount(fatWeight , fatRate);
+        snfAmount = calculateSnfAmount(snfWeight , snfRate);
         theTotalPayAmount = fatAmount + snfAmount;
         MilkDetails milkDetailsModel = getMilkDetailsModel(milkDetails);
         return milkRepository.save(milkDetailsModel);
@@ -46,8 +46,8 @@ public class MilkServiceImpl implements MilkService {
         return milkRepository.getMilkPayment(name).stream().map(MilkDetails::getMilkPayment).collect(Collectors.toList());
     }
 
-    private Double calculateFatKg(Double milkWeight, Double fat){
-        log.info("inside MilkServiceImpl.calculateFatKg: {} {}", milkWeight, fat);
+    private Double calculateFatWeight(Double milkWeight, Double fat){
+        log.info("inside MilkServiceImpl.calculateFatWeight: {} {}", milkWeight, fat);
         return (milkWeight * fat) / 1000;
     }
 
@@ -56,8 +56,8 @@ public class MilkServiceImpl implements MilkService {
         return (clr * 25) + 14 + fat * 2;
     }
 
-    private Double calculateSnfKg(Double milkWeight, Double snfPercent){
-        log.info("inside MilkServiceImpl.calculateSnfKg: {} {}", milkWeight, snfPercent);
+    private Double calculateSnfWeight (Double milkWeight, Double snfPercent){
+        log.info("inside MilkServiceImpl.calculateSnfWeight: {} {}", milkWeight, snfPercent);
         return (milkWeight * snfPercent) / 10000;
     }
 
@@ -84,9 +84,9 @@ public class MilkServiceImpl implements MilkService {
     private MilkDetails getMilkDetailsModel (MilkDetailsRequestDTO milkDetails) {
         MilkDetails milkDetailsModel = new MilkDetails();
         milkDetailsModel.setMilkType(MilkType.BUFFALO);
-        milkDetailsModel.setFatKg(fatKg);
+        milkDetailsModel.setFatKg(fatWeight);
         milkDetailsModel.setSnfPercent(snfPercent);
-        milkDetailsModel.setSnfKg(snfKg);
+        milkDetailsModel.setSnfKg(snfWeight);
         milkDetailsModel.setFatRate(fatRate);
         milkDetailsModel.setSnfRate(snfRate);
         milkDetailsModel.setFatAmount(fatAmount);

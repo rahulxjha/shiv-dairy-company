@@ -2,11 +2,13 @@ package com.shivdairy.company.service.impl;
 
 import com.shivdairy.company.dto.MilkDetailsRequestDTO;
 import com.shivdairy.company.dto.MilkType;
+import com.shivdairy.company.exception.NoItemFoundException;
 import com.shivdairy.company.model.MilkDetails;
 import com.shivdairy.company.repository.MilkRepository;
 import com.shivdairy.company.service.MilkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +27,8 @@ public class MilkServiceImpl implements MilkService {
     private Double fatAmount;
     private Double snfAmount;
     private Double theTotalPayAmount;
+    @Value("${milkDetails.notFound.exception.message}")
+    private String milkDetailsNotFoundException;
 
     @Override
     public MilkDetails calculateMilkProperty(MilkDetailsRequestDTO milkDetails) {
@@ -42,8 +46,12 @@ public class MilkServiceImpl implements MilkService {
     }
 
     @Override
-    public List<Double> getMilkPayment( String name) {
-        return milkRepository.getMilkPayment(name).stream().map(MilkDetails::getMilkPayment).collect(Collectors.toList());
+    public List<Double> getMilkPayment(String name) {
+        List<MilkDetails> milkDetails = milkRepository.getMilkPayment(name);
+        if (!milkDetails.isEmpty()) {
+            return milkDetails.stream().map(MilkDetails::getMilkPayment).collect(Collectors.toList());
+        } else throw new NoItemFoundException(String.format(milkDetailsNotFoundException, name));
+
     }
 
     private Double calculateFatWeight(Double milkWeight, Double fat){

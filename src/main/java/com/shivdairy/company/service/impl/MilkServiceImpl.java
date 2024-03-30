@@ -50,6 +50,7 @@ public class MilkServiceImpl implements MilkService {
     @Override
     public List<Double> getMilkPayment(String name, LocalDate startDate, LocalDate endDate) {
         List<MilkDetails> milkDetails = milkRepository.getMilkPayment(name, startDate, endDate);
+
         if (!milkDetails.isEmpty()) {
             return milkDetails.stream().map(MilkDetails::getMilkPayment).collect(Collectors.toList());
         } else throw new NoItemFoundException(String.format(milkDetailsNotFoundException, name));

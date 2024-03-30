@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.LocalDate.*;
+
 @Slf4j
 @RestController
 @RequestMapping(value = "api/v1")
@@ -33,7 +35,8 @@ public class MilkCalcApi {
     @GetMapping("/getMilkPayment")
     public ResponseEntity<BaseResponseDTO<List<Double>>> getMilkPayment(@RequestParam Map<String, String> params){
         log.info("Requesting for api/v1/calculateMilkProperty with RequestParam: {}", params);
-        List<Double> theMilkPayment = milkService.getMilkPayment(params.get("name"));
+        List<Double> theMilkPayment = milkService.getMilkPayment(params.get("name"),
+                parse(params.get("startDate")), parse(params.get("endDate")));
         BaseResponseDTO<List<Double>> theMilkPaymentResponse = new BaseResponseDTO<>(MILK_PAYMENT_FETCHED , theMilkPayment);
         return ResponseEntity.ok(theMilkPaymentResponse);
     }

@@ -6,11 +6,13 @@ import com.shivdairy.company.exception.NoItemFoundException;
 import com.shivdairy.company.model.MilkDetails;
 import com.shivdairy.company.repository.MilkRepository;
 import com.shivdairy.company.service.MilkService;
+import com.shivdairy.company.utils.DateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,8 +48,8 @@ public class MilkServiceImpl implements MilkService {
     }
 
     @Override
-    public List<Double> getMilkPayment(String name) {
-        List<MilkDetails> milkDetails = milkRepository.getMilkPayment(name);
+    public List<Double> getMilkPayment(String name, LocalDate startDate, LocalDate endDate) {
+        List<MilkDetails> milkDetails = milkRepository.getMilkPayment(name, startDate, endDate);
         if (!milkDetails.isEmpty()) {
             return milkDetails.stream().map(MilkDetails::getMilkPayment).collect(Collectors.toList());
         } else throw new NoItemFoundException(String.format(milkDetailsNotFoundException, name));
@@ -89,7 +91,7 @@ public class MilkServiceImpl implements MilkService {
         return round(snfWeight * snfRate);
     }
 
-    private MilkDetails getMilkDetailsModel (MilkDetailsRequestDTO milkDetails) {
+    private MilkDetails getMilkDetailsModel (MilkDetailsRequestDTO milkDetailsRequestDTO ) {
         MilkDetails milkDetailsModel = new MilkDetails();
         milkDetailsModel.setMilkType(MilkType.BUFFALO);
         milkDetailsModel.setFatWeight(fatWeight);
@@ -100,11 +102,12 @@ public class MilkServiceImpl implements MilkService {
         milkDetailsModel.setFatAmount(fatAmount);
         milkDetailsModel.setSnfAmount(snfAmount);
         milkDetailsModel.setMilkPayment(theTotalPayAmount);
-        milkDetailsModel.setMilkRate(milkDetails.getMilkRate());
-        milkDetailsModel.setFat(milkDetails.getFat());
-        milkDetailsModel.setClr(milkDetails.getClr());
-        milkDetailsModel.setMilkWeight(milkDetails.getMilkWeight());
-        milkDetailsModel.setName(milkDetails.getName());
+        milkDetailsModel.setMilkRate(milkDetailsRequestDTO.getMilkRate());
+        milkDetailsModel.setFat(milkDetailsRequestDTO.getFat());
+        milkDetailsModel.setClr(milkDetailsRequestDTO.getClr());
+        milkDetailsModel.setMilkWeight(milkDetailsRequestDTO.getMilkWeight());
+        milkDetailsModel.setName(milkDetailsRequestDTO.getName());
+        milkDetailsModel.setDate(DateTimeUtil.date);
         return milkDetailsModel;
     }
 

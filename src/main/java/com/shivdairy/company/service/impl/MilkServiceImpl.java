@@ -1,5 +1,6 @@
 package com.shivdairy.company.service.impl;
 
+import com.shivdairy.company.constant.MilkConstant;
 import com.shivdairy.company.dto.MilkDetailsRequestDTO;
 import com.shivdairy.company.dto.MilkType;
 import com.shivdairy.company.exception.NoItemFoundException;
@@ -9,7 +10,6 @@ import com.shivdairy.company.service.MilkService;
 import com.shivdairy.company.utils.DateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,8 +29,6 @@ public class MilkServiceImpl implements MilkService {
     private Double fatAmount;
     private Double snfAmount;
     private Double theTotalPayAmount;
-    @Value("${milkDetails.notFound.exception.message}")
-    private String milkDetailsNotFoundException;
 
     @Override
     public MilkDetails calculateMilkProperty(MilkDetailsRequestDTO milkDetails) {
@@ -53,7 +51,7 @@ public class MilkServiceImpl implements MilkService {
 
         if (!milkDetails.isEmpty()) {
             return milkDetails.stream().map(MilkDetails::getMilkPayment).collect(Collectors.toList());
-        } else throw new NoItemFoundException(String.format(milkDetailsNotFoundException, name));
+        } else throw new NoItemFoundException(String.format(MilkConstant.MILK_DETAILS_NOT_FOUND_EXCEPTION, name));
 
     }
 

@@ -1,5 +1,6 @@
 package com.shivdairy.company.controller;
 
+import com.shivdairy.company.constant.MilkConstant;
 import com.shivdairy.company.dto.BaseResponseDTO;
 import com.shivdairy.company.dto.MilkDetailsRequestDTO;
 import com.shivdairy.company.model.MilkDetails;
@@ -21,14 +22,12 @@ import static java.time.LocalDate.*;
 public class MilkCalcApi {
     @Autowired
     private MilkService milkService;
-    private static final String MILK_PROPERTIES_CALCULATED = "Milk properties calculated and saved successfully.";
-    private static final String MILK_PAYMENT_FETCHED = "Milk payment fetched successfully.";
 
     @GetMapping("/calculateMilkProperty")
     public ResponseEntity<BaseResponseDTO<MilkDetails>> getTotalPayAmount(@Valid @RequestBody MilkDetailsRequestDTO milkDetailsRequestDTO){
         log.info("Requesting for api/v1/calculateMilkProperty with RequestBody: {}", milkDetailsRequestDTO);
         MilkDetails milkDetails = milkService.calculateMilkProperty(milkDetailsRequestDTO);
-        BaseResponseDTO<MilkDetails> milkPropertyResponse = new BaseResponseDTO<>(MILK_PROPERTIES_CALCULATED, milkDetails);
+        BaseResponseDTO<MilkDetails> milkPropertyResponse = new BaseResponseDTO<>(MilkConstant.MILK_PROPERTIES_CALCULATED, milkDetails);
         return ResponseEntity.ok(milkPropertyResponse);
     }
 
@@ -37,7 +36,7 @@ public class MilkCalcApi {
         log.info("Requesting for api/v1/calculateMilkProperty with RequestParam: {}", params);
         List<Double> theMilkPayment = milkService.getMilkPayment(params.get("name"),
                 parse(params.get("startDate")), parse(params.get("endDate")));
-        BaseResponseDTO<List<Double>> theMilkPaymentResponse = new BaseResponseDTO<>(MILK_PAYMENT_FETCHED , theMilkPayment);
+        BaseResponseDTO<List<Double>> theMilkPaymentResponse = new BaseResponseDTO<>(MilkConstant.MILK_PAYMENT_FETCHED , theMilkPayment);
         return ResponseEntity.ok(theMilkPaymentResponse);
     }
 }

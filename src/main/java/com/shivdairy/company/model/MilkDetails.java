@@ -57,9 +57,6 @@ public class MilkDetails {
     @Column(name = "milk_rate", nullable = false)
     private Double milkRate;
 
-    @Column(name = "milk_powder")
-    private Double powder;
-
     @Column(name = "supplier_milk_payment")
     private Double milkPayment;
 
@@ -85,7 +82,6 @@ public class MilkDetails {
         if (snfPercent != null) milkMap.put("snfPercent", snfPercent.toString());
         if (snfRate != null) milkMap.put("snfRate", snfRate.toString());
         if (milkRate != null) milkMap.put("milkRate", milkRate.toString());
-        if (powder != null) milkMap.put("milkRate", powder.toString());
         if (milkPayment != null) milkMap.put("milkPayment", milkPayment.toString());
         if (date != null) milkMap.put("date", date.toString());
         return milkMap;

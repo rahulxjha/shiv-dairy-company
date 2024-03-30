@@ -5,6 +5,7 @@ import com.shivdairy.company.dto.MilkDetailsRequestDTO;
 import com.shivdairy.company.dto.MilkType;
 import com.shivdairy.company.exception.NoItemFoundException;
 import com.shivdairy.company.model.MilkDetails;
+import com.shivdairy.company.model.MilkPaymentSummary;
 import com.shivdairy.company.repository.MilkRepository;
 import com.shivdairy.company.service.MilkService;
 import com.shivdairy.company.utils.DateTimeUtil;
@@ -46,13 +47,15 @@ public class MilkServiceImpl implements MilkService {
     }
 
     @Override
-    public List<Double> getMilkPayment(String name, LocalDate startDate, LocalDate endDate) {
+    public MilkPaymentSummary getMilkPayment( String name, LocalDate startDate, LocalDate endDate) {
         List<MilkDetails> milkDetails = milkRepository.getMilkPayment(name, startDate, endDate);
-
         if (!milkDetails.isEmpty()) {
-            return milkDetails.stream().map(MilkDetails::getMilkPayment).collect(Collectors.toList());
+            List<MilkPaymentSummary.MilkPaymentDetails> milkPaymentDetails = milkDetails.stream()
+                    .map(detail -> new MilkPaymentSummary.MilkPaymentDetails(detail.getDate(), detail.getMilkPayment(),
+                            detail.getSupplier().getPaymentStatus()))
+                    .collect(Collectors.toList());
+            return new MilkPaymentSummary(milkPaymentDetails);
         } else throw new NoItemFoundException(String.format(MilkConstant.MILK_DETAILS_NOT_FOUND_EXCEPTION, name));
-
     }
 
     private Double calculateFatWeight(Double milkWeight, Double fat){

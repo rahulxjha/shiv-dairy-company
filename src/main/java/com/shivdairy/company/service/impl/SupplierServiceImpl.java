@@ -18,14 +18,14 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierRepositoryImpl supplierRepository;
 
     @Value("${supplier.notFound.exception.message}")
-    private String supplierNoteFoundException;
+    private String supplierNotFoundException;
 
     @Override
     public SupplierDTO findById(Integer id) {
         log.info("inside SupplierServiceImpl.findById({}) ", id);
         SupplierDTO supplierDTO = supplierRepository.findById(id);
         if (supplierDTO == null)
-            throw new NoItemFoundException(String.format(supplierNoteFoundException, id));
+            throw new NoItemFoundException(String.format(supplierNotFoundException , id));
         else return supplierDTO;
     }
 

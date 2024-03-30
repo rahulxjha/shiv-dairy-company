@@ -5,6 +5,7 @@ import com.shivdairy.company.dto.SupplierDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +63,9 @@ public class MilkDetails {
     @Column(name = "supplier_milk_payment")
     private Double milkPayment;
 
+    @Column(name = "date")
+    private LocalDate date;
+
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private SupplierDTO supplier;
@@ -83,6 +87,7 @@ public class MilkDetails {
         if (milkRate != null) milkMap.put("milkRate", milkRate.toString());
         if (powder != null) milkMap.put("milkRate", powder.toString());
         if (milkPayment != null) milkMap.put("milkPayment", milkPayment.toString());
+        if (date != null) milkMap.put("date", date.toString());
         return milkMap;
     }
 

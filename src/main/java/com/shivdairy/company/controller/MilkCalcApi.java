@@ -24,7 +24,7 @@ public class MilkCalcApi {
     private MilkService milkService;
 
     @GetMapping("/calculateMilkProperty")
-    public ResponseEntity<BaseResponseDTO<MilkDetails>> getTotalPayAmount(@Valid @RequestBody MilkDetailsRequestDTO milkDetailsRequestDTO){
+    public ResponseEntity<BaseResponseDTO<MilkDetails>> calculateMilkProperty(@Valid @RequestBody MilkDetailsRequestDTO milkDetailsRequestDTO){
         log.info("Requesting for api/v1/calculateMilkProperty with RequestBody: {}", milkDetailsRequestDTO);
         MilkDetails milkDetails = milkService.calculateMilkProperty(milkDetailsRequestDTO);
         BaseResponseDTO<MilkDetails> milkPropertyResponse = new BaseResponseDTO<>(MilkConstant.MILK_PROPERTIES_CALCULATED, milkDetails);

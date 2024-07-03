@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class MilkSaleRequestDTO {
-    @NotNull(message = "MilkSale should not be null.")
-    private MilkSale milkSale;
+    @NotNull(message = "MilkSaleDTO should not be null.")
+    private MilkSaleDTO buyerMilkDetails;
 
     @NotNull(message = "MilkDetailsRequestDTO should not be null.")
-    private MilkDetailsRequestDTO milkDetailsRequestDTO;
+    private MilkDetailsRequestDTO sellerMilkDetails;
 }

@@ -1,0 +1,18 @@
+{
+  "buyerMilkDetails": {
+    "name": "John Doe",
+    "paymentStatus": "PAID",
+    "date": "2024-06-28",
+    "milkWeight": 100.0,
+    "fat": 4.5,
+    "clr": 28.5,
+    "milkRate": 45.0
+  },
+  "sellerMilkDetails": {
+    "name": "Jane Smith",
+    "milkWeight": 120.0,
+    "fat": 3.8,
+    "clr": 30.0,
+    "milkRate": 42.5
+  }
+}

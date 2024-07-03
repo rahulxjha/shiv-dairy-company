@@ -18,15 +18,15 @@ import static java.time.LocalDate.*;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "api/v1")
+@RequestMapping(value = "public/api/v1")
 public class MilkCalcApi {
     @Autowired
     private MilkService milkService;
 
-    @GetMapping("/calculateMilkProperty")
+    @GetMapping("/calculateSupplierMilkProperty")
     public ResponseEntity<BaseResponseDTO<MilkDetails>> calculateMilkProperty(@Valid @RequestBody MilkDetailsRequestDTO milkDetailsRequestDTO){
         log.info("Requesting for api/v1/calculateMilkProperty with RequestBody: {}", milkDetailsRequestDTO);
-        MilkDetails milkDetails = milkService.calculateMilkProperty(milkDetailsRequestDTO);
+        MilkDetails milkDetails = milkService.saveMilkDetails(milkDetailsRequestDTO);
         BaseResponseDTO<MilkDetails> milkPropertyResponse = new BaseResponseDTO<>(MilkConstant.MILK_PROPERTIES_CALCULATED, milkDetails);
         return ResponseEntity.ok(milkPropertyResponse);
     }

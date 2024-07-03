@@ -3,8 +3,6 @@ package com.shivdairy.company.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
 public class MilkSaleDTO implements MilkProperty {
     @NotNull(message = "Buyer name should not be null.")

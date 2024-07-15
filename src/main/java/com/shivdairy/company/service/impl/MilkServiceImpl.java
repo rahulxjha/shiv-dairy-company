@@ -9,7 +9,6 @@ import com.shivdairy.company.model.MilkDetails;
 import com.shivdairy.company.model.MilkPaymentSummary;
 import com.shivdairy.company.model.MilkSaleDetails;
 import com.shivdairy.company.repository.MilkRepository;
-import com.shivdairy.company.repository.MilkSaleRepository;
 import com.shivdairy.company.service.MilkService;
 import com.shivdairy.company.utils.DateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +24,6 @@ import java.util.stream.Collectors;
 public class MilkServiceImpl implements MilkService {
     @Autowired
     private MilkRepository milkRepository;
-    @Autowired
-    private MilkSaleRepository milkSaleRepository;
     private Double fatWeight;
     private Double snfPercent;
     private Double snfWeight;
@@ -54,14 +51,6 @@ public class MilkServiceImpl implements MilkService {
         MilkDetails milkDetailsModel = getMilkDetailsModel(milkProperty);
         return milkRepository.save(milkDetailsModel);
     }
-
-    @Override
-    public MilkSaleDetails saveMilkSaleDetails(MilkSaleRequestDTO milkSaleRequestDTO) {
-        calculateMilkProperty(milkSaleRequestDTO.getBuyerMilkDetails());
-        MilkSaleDetails milkSaleDetails = getMilkSaleDetailsModel(milkSaleRequestDTO);
-        return milkSaleRepository.save(milkSaleDetails);
-    }
-
 
     @Override
     public MilkPaymentSummary getMilkPayment( String name, LocalDate startDate, LocalDate endDate) {
@@ -130,7 +119,7 @@ public class MilkServiceImpl implements MilkService {
         return milkDetailsModel;
     }
 
-    private MilkSaleDetails getMilkSaleDetailsModel(MilkSaleRequestDTO milkSaleRequestDTO){
+    MilkSaleDetails getMilkSaleDetailsModel(MilkSaleRequestDTO milkSaleRequestDTO){
         MilkSaleDetails milkSaleDetails = new MilkSaleDetails();
         milkSaleDetails.setBuyerName(milkSaleRequestDTO.getBuyerMilkDetails().getName());
         milkSaleDetails.setPaymentStatus(milkSaleRequestDTO.getBuyerMilkDetails().getPaymentStatus());
@@ -146,6 +135,7 @@ public class MilkServiceImpl implements MilkService {
         milkSaleDetails.setBuyerClr(milkSaleRequestDTO.getBuyerMilkDetails().getClr());
         milkSaleDetails.setMilkRate(milkSaleRequestDTO.getBuyerMilkDetails().getMilkRate());
         milkSaleDetails.setDate(DateTimeUtil.date);
+        milkSaleDetails.setSellerName(milkSaleRequestDTO.getSellerMilkDetails().getName());
         milkSaleDetails.setMilkWeight(milkSaleRequestDTO.getSellerMilkDetails().getMilkWeight());
         milkSaleDetails.setFat(milkSaleRequestDTO.getSellerMilkDetails().getFat());
         milkSaleDetails.setClr(milkSaleRequestDTO.getSellerMilkDetails().getClr());

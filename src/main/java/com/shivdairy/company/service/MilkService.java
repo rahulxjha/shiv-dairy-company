@@ -10,6 +10,5 @@ import java.time.LocalDate;
 
 public interface MilkService {
     MilkDetails saveMilkDetails(MilkProperty milkProperty);
-    MilkSaleDetails saveMilkSaleDetails(MilkSaleRequestDTO milkSaleRequestDTO);
     MilkPaymentSummary getMilkPayment(String name, LocalDate startDate, LocalDate endDate);
 }

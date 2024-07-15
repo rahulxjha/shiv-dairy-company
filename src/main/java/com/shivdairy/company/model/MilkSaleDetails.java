@@ -59,6 +59,9 @@ public class MilkSaleDetails {
     @Column(name = "date")
     private LocalDate date;
 
+    @Column(name = "seller_name")
+    private String sellerName;
+
     @Column(name = "seller_milk_weight")
     private Double milkWeight;
 

@@ -58,11 +58,11 @@ public class MilkSaleApi {
         return ResponseEntity.ok(milkPropertyResponse);
     }
 
-    @GetMapping("/generate-pdf")
+    @GetMapping("/generateMilkSaleDetails-pdf")
     public ResponseEntity<InputStreamResource> generatePdf() {
         ByteArrayInputStream bis = pdfService.generatePdfForMilkSaleDetails();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=generated.pdf");
+        headers.add("Content-Disposition", "inline; filename=milk-sale-details.pdf");
         return ResponseEntity
                 .ok()
                 .headers(headers)

@@ -7,8 +7,10 @@ import com.shivdairy.company.model.MilkPaymentSummary;
 import com.shivdairy.company.model.MilkSaleDetails;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface MilkService {
     MilkDetails saveMilkDetails(MilkProperty milkProperty);
     MilkPaymentSummary getMilkPayment(String name, LocalDate startDate, LocalDate endDate);
+    List<MilkDetails> getAllMilkDetails();
 }

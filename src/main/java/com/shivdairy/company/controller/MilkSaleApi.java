@@ -5,12 +5,17 @@ import com.shivdairy.company.dto.BaseResponseDTO;
 import com.shivdairy.company.dto.MilkSaleRequestDTO;
 import com.shivdairy.company.model.MilkSaleDetails;
 import com.shivdairy.company.service.MilkSaleService;
+import com.shivdairy.company.service.PdfService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +27,8 @@ import static java.time.LocalDate.parse;
 public class MilkSaleApi {
     @Autowired
     private MilkSaleService milkSaleService;
+    @Autowired
+    private PdfService pdfService;
 
     @GetMapping("/getAllMilkSaleDetails")
     public ResponseEntity<BaseResponseDTO<List<MilkSaleDetails>>> getAllMilkSaleDetails(){
@@ -49,5 +56,17 @@ public class MilkSaleApi {
         BaseResponseDTO<MilkSaleDetails> milkPropertyResponse =
                 new BaseResponseDTO<>(MilkConstant.MILK_PROPERTIES_CALCULATED, milkSaleDetails);
         return ResponseEntity.ok(milkPropertyResponse);
+    }
+
+    @GetMapping("/generate-pdf")
+    public ResponseEntity<InputStreamResource> generatePdf() {
+        ByteArrayInputStream bis = pdfService.generatePdfForMilkSaleDetails();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=generated.pdf");
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
 }

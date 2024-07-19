@@ -4,4 +4,5 @@ import java.io.ByteArrayInputStream;
 
 public interface PdfService {
     ByteArrayInputStream generatePdfForMilkSaleDetails();
+    ByteArrayInputStream generatePdfForMilkDetails();
 }

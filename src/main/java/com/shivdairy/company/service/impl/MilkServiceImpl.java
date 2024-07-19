@@ -64,6 +64,13 @@ public class MilkServiceImpl implements MilkService {
         } else throw new NoItemFoundException(String.format(MilkConstant.MILK_DETAILS_NOT_FOUND_EXCEPTION, name));
     }
 
+    @Override
+    public List<MilkDetails> getAllMilkDetails() {
+        List<MilkDetails> milkdetailsList = milkRepository.findAll();
+        if (!milkdetailsList.isEmpty()) return milkdetailsList;
+        else throw new NoItemFoundException("There is no milk details present in the database.");
+    }
+
     private Double calculateFatWeight(Double milkWeight, Double fat){
         log.info("inside MilkServiceImpl.calculateFatWeight: {} {}", milkWeight, fat);
         return round((milkWeight * fat / 1000.0));

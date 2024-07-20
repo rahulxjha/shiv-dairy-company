@@ -42,7 +42,7 @@ public class MilkServiceImpl implements MilkService {
         snfRate = calculateSnfRate(milkProperty.getMilkRate());
         fatAmount = calculateFatAmount(fatWeight , fatRate);
         snfAmount = calculateSnfAmount(snfWeight , snfRate);
-        theTotalPayAmount = fatAmount + snfAmount;
+        theTotalPayAmount = round(fatAmount + snfAmount);
     }
 
     @Override

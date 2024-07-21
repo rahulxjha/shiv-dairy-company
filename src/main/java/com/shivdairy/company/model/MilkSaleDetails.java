@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Table(name = "milk_sale_details")
 public class MilkSaleDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "buyer_name", nullable = false)

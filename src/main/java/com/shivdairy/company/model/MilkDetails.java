@@ -14,8 +14,7 @@ import java.util.Map;
 @Table(name = "milk_details")
 public class MilkDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "milk_sequence")
-    @SequenceGenerator(name = "milk_sequence", sequenceName = "milk_sequence", initialValue = 1011, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "milk_type", nullable = false)

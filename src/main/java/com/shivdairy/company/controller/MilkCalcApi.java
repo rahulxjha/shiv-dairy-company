@@ -1,5 +1,6 @@
 package com.shivdairy.company.controller;
 
+import com.lowagie.text.DocumentException;
 import com.shivdairy.company.constant.MilkConstant;
 import com.shivdairy.company.dto.BaseResponseDTO;
 import com.shivdairy.company.dto.MilkDetailsRequestDTO;
@@ -7,6 +8,7 @@ import com.shivdairy.company.model.MilkDetails;
 import com.shivdairy.company.model.MilkPaymentSummary;
 import com.shivdairy.company.service.MilkService;
 import com.shivdairy.company.service.PdfService;
+import com.shivdairy.company.utils.DateTimeUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 import java.util.Map;
 
 import static java.time.LocalDate.*;
@@ -30,7 +33,7 @@ public class MilkCalcApi {
     @Autowired
     private PdfService pdfService;
 
-    @PostMapping("/calculateSupplierMilkProperty")
+    @PostMapping("calculateMilkProperty")
     public ResponseEntity<BaseResponseDTO<MilkDetails>> calculateMilkProperty(@Valid @RequestBody MilkDetailsRequestDTO milkDetailsRequestDTO){
         log.info("Requesting for api/v1/calculateMilkProperty with RequestBody: {}", milkDetailsRequestDTO);
         MilkDetails milkDetails = milkService.saveMilkDetails(milkDetailsRequestDTO);
@@ -38,7 +41,7 @@ public class MilkCalcApi {
         return ResponseEntity.ok(milkPropertyResponse);
     }
 
-    @GetMapping("/getMilkPayment")
+    @GetMapping("milkPayment")
     public ResponseEntity<BaseResponseDTO<MilkPaymentSummary>> getMilkPayment(@RequestParam Map<String, String> params){
         log.info("Requesting for api/v1/calculateMilkProperty with RequestParam: {}", params);
         MilkPaymentSummary theMilkPayment = milkService.getMilkPayment(params.get("name"),
@@ -47,11 +50,26 @@ public class MilkCalcApi {
         return ResponseEntity.ok(theMilkPaymentResponse);
     }
 
-    @GetMapping("/generateMilkDetails-pdf")
-    public ResponseEntity<InputStreamResource> generatePdfForMilkDetails() {
+    @GetMapping("milkDetailsPdf")
+    public ResponseEntity<InputStreamResource> generatePdfForMilkDetails() throws DocumentException {
         ByteArrayInputStream bis = pdfService.generatePdfForMilkDetails();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=milk-details.pdf");
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    @GetMapping("milkDetailsPdfByName")
+    public ResponseEntity<InputStreamResource> generatePdfForMilkDetails(@RequestParam Map<String, String> params) throws DocumentException {
+        LocalDate effectiveDate = LocalDate.parse(params.get("effectiveDate"), DateTimeUtil.dateFormatter);
+        LocalDate endDate = LocalDate.parse(params.get("endDate"), DateTimeUtil.dateFormatter);
+        ByteArrayInputStream bis = pdfService.generatePdfForMilkDetailsByName(params.get("supplierName"),
+                effectiveDate, endDate);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename="+ params.get("supplierName") + "-milk-details.pdf");
         return ResponseEntity
                 .ok()
                 .headers(headers)

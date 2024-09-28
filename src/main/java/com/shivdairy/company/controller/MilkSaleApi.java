@@ -1,11 +1,13 @@
 package com.shivdairy.company.controller;
 
+import com.lowagie.text.DocumentException;
 import com.shivdairy.company.constant.MilkConstant;
 import com.shivdairy.company.dto.BaseResponseDTO;
 import com.shivdairy.company.dto.MilkSaleRequestDTO;
 import com.shivdairy.company.model.MilkSaleDetails;
 import com.shivdairy.company.service.MilkSaleService;
 import com.shivdairy.company.service.PdfService;
+import com.shivdairy.company.utils.DateTimeUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -39,11 +42,11 @@ public class MilkSaleApi {
         return ResponseEntity.ok(milkSaleDetailsResponse);
     }
 
-    @GetMapping("/getAllMilkSaleDetailsFilter")
+    @GetMapping("/milkSaleDetailsFilter")
     public ResponseEntity<BaseResponseDTO<List<MilkSaleDetails>>> getAllMilkSaleDetails(@RequestParam Map<String, String> params){
         log.info("Requesting for api/v1/getAllMilkSaleDetails with RequestParam: {}", params);
         List<MilkSaleDetails> milkSaleDetailsFilter = milkSaleService.getAllMilkSaleDetails(params.get("buyerName"),
-                parse(params.get("startDate")), parse(params.get("endDate")));
+                parse(params.get("effectiveDate")), parse(params.get("endDate")));
         BaseResponseDTO<List<MilkSaleDetails>> milkSaleDetailsFilterResponse =
                 new BaseResponseDTO<>(MilkConstant.MILK_SALE_DETAILS_FETCHED_FILTER, milkSaleDetailsFilter);
         return ResponseEntity.ok(milkSaleDetailsFilterResponse);
@@ -58,11 +61,25 @@ public class MilkSaleApi {
         return ResponseEntity.ok(milkPropertyResponse);
     }
 
-    @GetMapping("/generateMilkSaleDetails-pdf")
-    public ResponseEntity<InputStreamResource> generatePdf() {
+    @GetMapping("/milkSaleDetailsPdf")
+    public ResponseEntity<InputStreamResource> generatePdf() throws DocumentException {
         ByteArrayInputStream bis = pdfService.generatePdfForMilkSaleDetails();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=milk-sale-details.pdf");
+        headers.add("Content-Disposition", "inline; filename=default-milk-sale-details.pdf");
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    @GetMapping("milkSaleDetailsPdfFilter")
+    public ResponseEntity<InputStreamResource> getAllMilkSaleDetailsPdf(@RequestParam Map<String, String> param) throws DocumentException {
+        LocalDate effectiveDate = LocalDate.parse(param.get("effectiveDate"), DateTimeUtil.dateFormatter);
+        LocalDate endDate = LocalDate.parse(param.get("endDate"), DateTimeUtil.dateFormatter);
+        ByteArrayInputStream bis = pdfService.generatePdfForMilkSaleDetails(param.get("buyerName"), effectiveDate, endDate);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename = "+ param.get("buyerName") + "-milk-sale-details.pdf");
         return ResponseEntity
                 .ok()
                 .headers(headers)

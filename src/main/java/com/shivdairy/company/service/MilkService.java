@@ -1,10 +1,8 @@
 package com.shivdairy.company.service;
 
 import com.shivdairy.company.dto.MilkProperty;
-import com.shivdairy.company.dto.MilkSaleRequestDTO;
 import com.shivdairy.company.model.MilkDetails;
 import com.shivdairy.company.model.MilkPaymentSummary;
-import com.shivdairy.company.model.MilkSaleDetails;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,7 +1,6 @@
 package com.shivdairy.company.repository;
 
 import com.shivdairy.company.model.MilkDetails;
-import com.shivdairy.company.model.MilkSaleDetails;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

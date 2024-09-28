@@ -31,12 +31,12 @@ public class MilkSaleServiceImpl implements MilkSaleService {
     }
 
     @Override
-    public List<MilkSaleDetails> getAllMilkSaleDetails(String buyerName, LocalDate startDate, LocalDate endDate) {
-        List<MilkSaleDetails> milkSaleDetails = milkSaleRepository.getMilkSaleDetails(buyerName, startDate, endDate);
+    public List<MilkSaleDetails> getAllMilkSaleDetails(String buyerName, LocalDate effectiveDate, LocalDate endDate) {
+        List<MilkSaleDetails> milkSaleDetails = milkSaleRepository.getMilkSaleDetails(buyerName, effectiveDate, endDate);
         if (!milkSaleDetails.isEmpty()) {
             return milkSaleDetails.stream()
                     .filter(saleDetails -> saleDetails.getBuyerName().equalsIgnoreCase(buyerName))
-                    .filter(saleDetails -> !saleDetails.getDate().isBefore(startDate) && !saleDetails.getDate().isAfter(endDate))
+                    .filter(saleDetails -> !saleDetails.getDate().isBefore(effectiveDate) && !saleDetails.getDate().isAfter(endDate))
                     .collect(Collectors.toList());
         }
         return List.of();

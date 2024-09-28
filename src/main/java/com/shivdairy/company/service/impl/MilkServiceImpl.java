@@ -57,8 +57,8 @@ public class MilkServiceImpl implements MilkService {
         List<MilkDetails> milkDetails = milkRepository.getMilkPayment(name, startDate, endDate);
         if (!milkDetails.isEmpty()) {
             List<MilkPaymentSummary.MilkPaymentDetails> milkPaymentDetails = milkDetails.stream()
-                    .map(detail -> new MilkPaymentSummary.MilkPaymentDetails(detail.getDate(), detail.getMilkPayment(),
-                            detail.getSupplier().getPaymentStatus()))
+                    .map(detail -> new MilkPaymentSummary.MilkPaymentDetails(detail.getDate(), detail.getMilkPayment()))
+//                            detail.getSupplier().getPaymentStatus()))
                     .collect(Collectors.toList());
             return new MilkPaymentSummary(milkPaymentDetails);
         } else throw new NoItemFoundException(String.format(MilkConstant.MILK_DETAILS_NOT_FOUND_EXCEPTION, name));
@@ -69,6 +69,18 @@ public class MilkServiceImpl implements MilkService {
         List<MilkDetails> milkdetailsList = milkRepository.findAll();
         if (!milkdetailsList.isEmpty()) return milkdetailsList;
         else throw new NoItemFoundException("There is no milk details present in the database.");
+    }
+
+    @Override
+    public List<MilkDetails> getAllMilkDetailsByName(String supplierName, LocalDate effectiveDate, LocalDate endDate) {
+        List<MilkDetails> milkDetails = milkRepository.getMilkDetails(supplierName, effectiveDate, endDate);
+        if (!milkDetails.isEmpty()) {
+            return milkDetails.stream()
+                    .filter(details -> details.getName().equalsIgnoreCase(supplierName))
+                    .filter(saleDetails -> !saleDetails.getDate().isBefore(effectiveDate) && !saleDetails.getDate().isAfter(endDate))
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     private Double calculateFatWeight(Double milkWeight, Double fat){
@@ -150,7 +162,8 @@ public class MilkServiceImpl implements MilkService {
         return milkSaleDetails;
     }
 
-    private Double round(Double value) {
+    @Override
+    public Double round(Double value) {
         return Math.round(value * 100.0) / 100.0;
     }
 }

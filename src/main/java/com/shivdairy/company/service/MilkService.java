@@ -13,4 +13,6 @@ public interface MilkService {
     MilkDetails saveMilkDetails(MilkProperty milkProperty);
     MilkPaymentSummary getMilkPayment(String name, LocalDate startDate, LocalDate endDate);
     List<MilkDetails> getAllMilkDetails();
+    List<MilkDetails> getAllMilkDetailsByName(String supplierName, LocalDate effectiveDate, LocalDate endDate);
+    Double round(Double value);
 }

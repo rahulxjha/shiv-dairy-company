@@ -16,4 +16,10 @@ public interface MilkRepository extends JpaRepository<MilkDetails, String> {
     @Query("SELECT m FROM MilkDetails m WHERE m.name LIKE %:name% AND m.date BETWEEN :startDate AND :endDate")
     List<MilkDetails> getMilkPayment(@Param("name") String name, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
+    @Query("SELECT m FROM MilkDetails m WHERE m.name LIKE %:supplierName% AND m.date BETWEEN :effectiveDate " +
+            "AND " +
+            ":endDate")
+    List<MilkDetails> getMilkDetails(@Param("supplierName") String supplierName, @Param("effectiveDate") LocalDate effectiveDate,
+                                         @Param("endDate") LocalDate endDate);
+
 }

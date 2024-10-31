@@ -53,7 +53,7 @@ public class SupplierDTO {
     private LocalDateTime updatedDt;
 
     @Column(name = "supplier_payment_status")
-    private PaymentStatus paymentStatus = PaymentStatus.NOT_DONE;
+    private PaymentStatus paymentStatus = PaymentStatus.NOT_PAID;
 
     @Column
     private Boolean isDeleted = Boolean.FALSE;

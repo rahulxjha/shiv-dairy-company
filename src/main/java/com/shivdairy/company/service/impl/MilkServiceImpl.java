@@ -1,11 +1,13 @@
 package com.shivdairy.company.service.impl;
 
 import com.shivdairy.company.constant.MilkConstant;
-import com.shivdairy.company.dto.MilkDetailsRequestDTO;
+import com.shivdairy.company.dto.MilkProperty;
+import com.shivdairy.company.dto.MilkSaleRequestDTO;
 import com.shivdairy.company.dto.MilkType;
 import com.shivdairy.company.exception.NoItemFoundException;
 import com.shivdairy.company.model.MilkDetails;
 import com.shivdairy.company.model.MilkPaymentSummary;
+import com.shivdairy.company.model.MilkSaleDetails;
 import com.shivdairy.company.repository.MilkRepository;
 import com.shivdairy.company.service.MilkService;
 import com.shivdairy.company.utils.DateTimeUtil;
@@ -31,18 +33,22 @@ public class MilkServiceImpl implements MilkService {
     private Double snfAmount;
     private Double theTotalPayAmount;
 
-    @Override
-    public MilkDetails calculateMilkProperty(MilkDetailsRequestDTO milkDetails) {
-        log.info("inside MilkServiceImpl.calculateMilkProperty: {}", milkDetails);
-        fatWeight = calculateFatWeight(milkDetails.getMilkWeight(), milkDetails.getFat());
-        snfPercent = calculateSnfPercent(milkDetails.getClr(), milkDetails.getFat());
-        snfWeight = calculateSnfWeight(milkDetails.getMilkWeight(), snfPercent);
-        fatRate = calculateFatRate(milkDetails.getMilkRate());
-        snfRate = calculateSnfRate(milkDetails.getMilkRate());
+    public void calculateMilkProperty(MilkProperty milkProperty) {
+        log.info("inside MilkServiceImpl.calculateMilkProperty: {}", milkProperty);
+        fatWeight = calculateFatWeight(milkProperty.getMilkWeight(), milkProperty.getFat());
+        snfPercent = calculateSnfPercent(milkProperty.getClr(), milkProperty.getFat());
+        snfWeight = calculateSnfWeight(milkProperty.getMilkWeight(), snfPercent);
+        fatRate = calculateFatRate(milkProperty.getMilkRate());
+        snfRate = calculateSnfRate(milkProperty.getMilkRate());
         fatAmount = calculateFatAmount(fatWeight , fatRate);
         snfAmount = calculateSnfAmount(snfWeight , snfRate);
-        theTotalPayAmount = fatAmount + snfAmount;
-        MilkDetails milkDetailsModel = getMilkDetailsModel(milkDetails);
+        theTotalPayAmount = round(fatAmount + snfAmount);
+    }
+
+    @Override
+    public MilkDetails saveMilkDetails(MilkProperty milkProperty){
+        calculateMilkProperty(milkProperty);
+        MilkDetails milkDetailsModel = getMilkDetailsModel(milkProperty);
         return milkRepository.save(milkDetailsModel);
     }
 
@@ -51,11 +57,30 @@ public class MilkServiceImpl implements MilkService {
         List<MilkDetails> milkDetails = milkRepository.getMilkPayment(name, startDate, endDate);
         if (!milkDetails.isEmpty()) {
             List<MilkPaymentSummary.MilkPaymentDetails> milkPaymentDetails = milkDetails.stream()
-                    .map(detail -> new MilkPaymentSummary.MilkPaymentDetails(detail.getDate(), detail.getMilkPayment(),
-                            detail.getSupplier().getPaymentStatus()))
+                    .map(detail -> new MilkPaymentSummary.MilkPaymentDetails(detail.getDate(), detail.getMilkPayment()))
+//                            detail.getSupplier().getPaymentStatus()))
                     .collect(Collectors.toList());
             return new MilkPaymentSummary(milkPaymentDetails);
         } else throw new NoItemFoundException(String.format(MilkConstant.MILK_DETAILS_NOT_FOUND_EXCEPTION, name));
+    }
+
+    @Override
+    public List<MilkDetails> getAllMilkDetails() {
+        List<MilkDetails> milkdetailsList = milkRepository.findAll();
+        if (!milkdetailsList.isEmpty()) return milkdetailsList;
+        else throw new NoItemFoundException("There is no milk details present in the database.");
+    }
+
+    @Override
+    public List<MilkDetails> getAllMilkDetailsByName(String supplierName, LocalDate effectiveDate, LocalDate endDate) {
+        List<MilkDetails> milkDetails = milkRepository.getMilkDetails(supplierName, effectiveDate, endDate);
+        if (!milkDetails.isEmpty()) {
+            return milkDetails.stream()
+                    .filter(details -> details.getName().equalsIgnoreCase(supplierName))
+                    .filter(saleDetails -> !saleDetails.getDate().isBefore(effectiveDate) && !saleDetails.getDate().isAfter(endDate))
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     private Double calculateFatWeight(Double milkWeight, Double fat){
@@ -93,7 +118,7 @@ public class MilkServiceImpl implements MilkService {
         return round(snfWeight * snfRate);
     }
 
-    private MilkDetails getMilkDetailsModel (MilkDetailsRequestDTO milkDetailsRequestDTO ) {
+    private MilkDetails getMilkDetailsModel (MilkProperty milkProperty ) {
         MilkDetails milkDetailsModel = new MilkDetails();
         milkDetailsModel.setMilkType(MilkType.BUFFALO);
         milkDetailsModel.setFatWeight(fatWeight);
@@ -104,16 +129,41 @@ public class MilkServiceImpl implements MilkService {
         milkDetailsModel.setFatAmount(fatAmount);
         milkDetailsModel.setSnfAmount(snfAmount);
         milkDetailsModel.setMilkPayment(theTotalPayAmount);
-        milkDetailsModel.setMilkRate(milkDetailsRequestDTO.getMilkRate());
-        milkDetailsModel.setFat(milkDetailsRequestDTO.getFat());
-        milkDetailsModel.setClr(milkDetailsRequestDTO.getClr());
-        milkDetailsModel.setMilkWeight(milkDetailsRequestDTO.getMilkWeight());
-        milkDetailsModel.setName(milkDetailsRequestDTO.getName());
+        milkDetailsModel.setMilkRate(milkProperty.getMilkRate());
+        milkDetailsModel.setFat(milkProperty.getFat());
+        milkDetailsModel.setClr(milkProperty.getClr());
+        milkDetailsModel.setMilkWeight(milkProperty.getMilkWeight());
+        milkDetailsModel.setName(milkProperty.getName());
         milkDetailsModel.setDate(DateTimeUtil.date);
         return milkDetailsModel;
     }
 
-    private Double round(Double value) {
+    MilkSaleDetails getMilkSaleDetailsModel(MilkSaleRequestDTO milkSaleRequestDTO){
+        MilkSaleDetails milkSaleDetails = new MilkSaleDetails();
+        milkSaleDetails.setBuyerName(milkSaleRequestDTO.getBuyerMilkDetails().getName());
+        milkSaleDetails.setPaymentStatus(milkSaleRequestDTO.getBuyerMilkDetails().getPaymentStatus());
+        milkSaleDetails.setBuyerMilkWeight(milkSaleRequestDTO.getBuyerMilkDetails().getMilkWeight());
+        milkSaleDetails.setBuyerFat(milkSaleRequestDTO.getBuyerMilkDetails().getFat());
+        milkSaleDetails.setFatWeight(fatWeight);
+        milkSaleDetails.setFatRate(fatRate);
+        milkSaleDetails.setFatAmount(fatAmount);
+        milkSaleDetails.setSnfWeight(snfWeight);
+        milkSaleDetails.setSnfPercent(snfPercent);
+        milkSaleDetails.setSnfRate(snfRate);
+        milkSaleDetails.setSnfAmount(snfAmount);
+        milkSaleDetails.setBuyerClr(milkSaleRequestDTO.getBuyerMilkDetails().getClr());
+        milkSaleDetails.setMilkRate(milkSaleRequestDTO.getBuyerMilkDetails().getMilkRate());
+        milkSaleDetails.setDate(DateTimeUtil.date);
+        milkSaleDetails.setSellerName(milkSaleRequestDTO.getSellerMilkDetails().getName());
+        milkSaleDetails.setMilkWeight(milkSaleRequestDTO.getSellerMilkDetails().getMilkWeight());
+        milkSaleDetails.setFat(milkSaleRequestDTO.getSellerMilkDetails().getFat());
+        milkSaleDetails.setClr(milkSaleRequestDTO.getSellerMilkDetails().getClr());
+        milkSaleDetails.setMilkPayment(theTotalPayAmount);
+        return milkSaleDetails;
+    }
+
+    @Override
+    public Double round(Double value) {
         return Math.round(value * 100.0) / 100.0;
     }
 }

@@ -1,0 +1,18 @@
+{
+  "buyerMilkDetails": {
+    "name": "Himanshu Kaushik",
+    "paymentStatus": "NOT_DONE",
+    "date": "2024-06-28",
+    "milkWeight": 99.5,
+    "fat": 4.5,
+    "clr": 28.5,
+    "milkRate": 45.0
+  },
+  "sellerMilkDetails": {
+    "name": "Rahul Jha",
+    "milkWeight": 100.0,
+    "fat": 47,
+    "clr": 30.0,
+    "milkRate": 45
+  }
+}

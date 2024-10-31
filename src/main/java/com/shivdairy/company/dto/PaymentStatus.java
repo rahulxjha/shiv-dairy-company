@@ -1,5 +1,5 @@
 package com.shivdairy.company.dto;
 
 public enum PaymentStatus {
-    COMPLETED, NOT_DONE, PROCESSED
+    PAID, NOT_PAID, PROCESSED
 }

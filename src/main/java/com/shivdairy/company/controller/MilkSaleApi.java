@@ -79,7 +79,8 @@ public class MilkSaleApi {
         LocalDate endDate = LocalDate.parse(param.get("endDate"), DateTimeUtil.dateFormatter);
         ByteArrayInputStream bis = pdfService.generatePdfForMilkSaleDetails(param.get("buyerName"), effectiveDate, endDate);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename = "+ param.get("buyerName") + "-milk-sale-details.pdf");
+        headers.add("Content-Disposition",
+                "inline; filename = "+ param.get("buyerName")+ "_" + DateTimeUtil.date + "_milk-sale-details.pdf");
         return ResponseEntity
                 .ok()
                 .headers(headers)

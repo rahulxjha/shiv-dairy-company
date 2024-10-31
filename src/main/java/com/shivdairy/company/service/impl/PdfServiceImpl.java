@@ -30,7 +30,7 @@ public class PdfServiceImpl implements PdfService {
     private final Font fieldFont = new Font(Font.TIMES_ROMAN, 12, Font.BOLD);
     private final Font headerFont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.BOLD, Color.WHITE);
     private final Font titleFont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 20, Font.BOLDITALIC, new Color(70, 130, 180));
-    private final Font cellFont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 9, Color.BLACK);
+    private final Font cellFont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 8, Color.BLACK);
     private final Color highlightColor = new Color(152, 251, 152);
     private final Font bodyFont = new Font(Font.TIMES_ROMAN, 12);
     private final Font mdHeaderFont = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, Font.BOLD, Color.WHITE);
@@ -39,60 +39,24 @@ public class PdfServiceImpl implements PdfService {
     @Override
     public ByteArrayInputStream generatePdfForMilkSaleDetails() throws DocumentException {
         List<MilkSaleDetails> saleDetails = milkSaleService.getAllMilkSaleDetails();
-        Document document = new Document(PageSize.A4);
+        Document document = new Document(PageSize.A4, 10, 10, 10, 10);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PdfWriter.getInstance(document, baos);
 
         document.open();
 
-        float[] columnWidths = {1f, 2f, 3f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 2f, 3f, 2f, 2f, 2f};
-        PdfPTable table = new PdfPTable(columnWidths);
-        table.setWidthPercentage(100);
-        table.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
+        // Add title
+        Paragraph title = new Paragraph("Shiv Dairy Milk Sale Details", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
 
-        table.addCell(new PdfPCell(new Phrase("Sr.No.")));
-        table.addCell(new PdfPCell(new Phrase("Date")));
-        table.addCell(new PdfPCell(new Phrase("Buyer Name")));
-        table.addCell(new PdfPCell(new Phrase("Milk Weight (Buyer)")));
-        table.addCell(new PdfPCell(new Phrase("Milk Fat (Buyer)")));
-        table.addCell(new PdfPCell(new Phrase("Milk CLR (Buyer)")));
-        table.addCell(new PdfPCell(new Phrase("Fat Weight")));
-        table.addCell(new PdfPCell(new Phrase("Fat Rate")));
-        table.addCell(new PdfPCell(new Phrase("SNF Weight")));
-        table.addCell(new PdfPCell(new Phrase("SNF Percent")));
-        table.addCell(new PdfPCell(new Phrase("SNF Rate")));
-        table.addCell(new PdfPCell(new Phrase("Milk Rate")));
-        table.addCell(new PdfPCell(new Phrase("Fat Amount")));
-        table.addCell(new PdfPCell(new Phrase("SNF Amount")));
-        table.addCell(new PdfPCell(new Phrase("Milk Payment")));
-        table.addCell(new PdfPCell(new Phrase("Payment Status")));
-        table.addCell(new PdfPCell(new Phrase("Seller Name")));
-        table.addCell(new PdfPCell(new Phrase("Milk Weight (Seller)")));
-        table.addCell(new PdfPCell(new Phrase("Milk Fat (Seller)")));
-        table.addCell(new PdfPCell(new Phrase("Milk CLR (Seller)")));
 
-        for (MilkSaleDetails saleDetail : saleDetails) {
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getId().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getDate().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getBuyerName())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getBuyerMilkWeight().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getBuyerFat().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getBuyerClr().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getFatWeight().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getFatRate().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfWeight().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfPercent().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfRate().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getMilkRate().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getFatAmount().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfAmount().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getMilkPayment().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getPaymentStatus().name())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getSellerName())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getMilkWeight().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getFat().toString())));
-            table.addCell(new PdfPCell(new Phrase(saleDetail.getClr().toString())));
-        }
+        float[] columnWidths = {2.5f, 3.5f, 2.7f, 2.3f, 2f, 2.5f, 2.5f, 2.5f, 2.3f, 2.5f, 2.2f, 3.5f, 3.5f,
+                3.8f, 2.5f, 3.5f, 2.5f, 2.2f, 2.2f};
+        PdfPTable table = getTable(19);
+        table.setWidths(columnWidths);
+
+        getMilkSaleDetailsTable(saleDetails, table, "");
 
         document.add(table);
         document.close();
@@ -110,7 +74,7 @@ public class PdfServiceImpl implements PdfService {
 
     @Override
     public ByteArrayInputStream generatePdfForMilkDetails() throws DocumentException {
-        List<MilkDetails> milkDetails = milkService.getAllMilkDetails();
+        List<MilkDetails> milkDetailsList = milkService.getAllMilkDetails();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         Document document = new Document(PageSize.A4, 10, 10, 10, 10); // Small margins
@@ -122,48 +86,13 @@ public class PdfServiceImpl implements PdfService {
         title.setAlignment(Paragraph.ALIGN_CENTER);
         document.add(title);
 
-        PdfPTable table = getTable(15);
+        PdfPTable table = getTable(14);
 
         // Setting column widths, you can adjust the ratio to your needs
-        float[] columnWidths = {1.2f, 2.5f, 3, 2, 1.3f, 1.3f, 1.6f, 1.5f, 1.6f, 1.5f, 1.9f, 1, 2, 2, 2.3f};
+        float[] columnWidths = {1.2f, 2.5f, 3, 2, 1.3f, 1.3f, 1.6f, 1.5f, 1.6f, 1.5f, 1.9f, 2, 2, 2.3f};
         table.setWidths(columnWidths);
 
-        table.addCell(createHeaderCell("Sr.No.", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Date", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Supplier Name", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Milk Weight", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Fat", headerFont, navyBlue));
-        table.addCell(createHeaderCell("CLR", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Fat Kg", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Fat Rate", headerFont, navyBlue));
-        table.addCell(createHeaderCell("SNF Kg", headerFont, navyBlue));
-        table.addCell(createHeaderCell("SNF %", headerFont, navyBlue));
-        table.addCell(createHeaderCell("SNF Rate", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Milk Rate", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Fat Pay", headerFont, navyBlue));
-        table.addCell(createHeaderCell("SNF Pay", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Milk Payment ", headerFont, navyBlue));
-
-        // Adding data rows with a smaller font
-        for (MilkDetails milkDetail : milkDetails) {
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getId().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getDate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getName(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getMilkWeight().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getFat().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getClr().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getFatWeight().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getFatRate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getSnfWeight().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getSnfPercent().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getSnfRate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getMilkRate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getFatAmount().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkDetail.getSnfAmount().toString(), cellFont)));
-            PdfPCell milkPaymentCell = new PdfPCell(new Phrase(milkDetail.getMilkPayment().toString(), cellFont));
-            milkPaymentCell.setBackgroundColor(highlightColor);
-            table.addCell(milkPaymentCell);
-        }
+        getMilkDetailsTable(milkDetailsList, table, "");
 
         document.add(table);
         document.close();
@@ -254,37 +183,7 @@ public class PdfServiceImpl implements PdfService {
 
         table.setWidths(columnWidths);
 
-        table.addCell(createHeaderCell("Sr.No.", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Date", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Weight", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Fat", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("clr", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Fat Weight", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Fat Rate", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("SNF Weight", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("SNF Rate", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Milk Rate", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Fat Amt", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("SNF Amt", mdHeaderFont, navyBlue));
-        table.addCell(createHeaderCell("Payment", mdHeaderFont, navyBlue));
-
-        for (MilkDetails milkDetails : milkDetailsList){
-            addCellToTable(table, String.valueOf(milkDetails.getId()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getDate()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getMilkWeight()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getFat()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getClr()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getFatWeight()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getFatRate()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getSnfWeight()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getSnfRate()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getMilkRate()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getFatAmount()), mdCellFont);
-            addCellToTable(table, String.valueOf(milkDetails.getSnfAmount()), mdCellFont);
-            PdfPCell milkPaymentCell = new PdfPCell(new Phrase(milkDetails.getMilkPayment().toString(), mdCellFont));
-            milkPaymentCell.setBackgroundColor(highlightColor);
-            table.addCell(milkPaymentCell);
-        }
+        getMilkDetailsTable(milkDetailsList, table, supplierName);
 
         document.add(table);
         document.close();
@@ -394,56 +293,96 @@ public class PdfServiceImpl implements PdfService {
 
         PdfPTable table = getTable(18);
 
-        float[] columnWidths = {1.2f, 2.5f, 2.2f, 1.3f, 1.3f, 1.9f, 1.9f, 1.9f, 1.9f, 1.5f, 2.4f, 2.4f, 2.7f, 2.9f,
+        float[] columnWidths = {2.9f, 2.3f, 1.7f, 1.3f, 1.8f, 1.9f, 1.9f, 1.9f, 1.9f, 1.5f, 2.4f, 2.4f, 2.7f, 2.9f,
                 2.7f, 2.1f, 1.3f, 1.3f};
         table.setWidths(columnWidths);
 
-        table.addCell(createHeaderCell("Sr.No.", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Payment Status", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Buyer Milk Weight", headerFont, navyBlue));
-        table.addCell(createHeaderCell("Buyer Fat", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("Buyer clr", headerFont, navyBlue, 90, 4)); // With rotation and padding
-        table.addCell(createHeaderCell("Fat Weight", headerFont, navyBlue, 90, 4)); // With rotation and padding
-        table.addCell(createHeaderCell("Fat Rate", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("SNF Weight", headerFont, navyBlue, 90, 0)); // With rotation
-        table.addCell(createHeaderCell("SNF Rate", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("Milk Rate", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("Fat Amount", headerFont, navyBlue, 90, 0)); // With rotation
-        table.addCell(createHeaderCell("SNF Amount", headerFont, navyBlue, 90, 0)); // With rotation
-        table.addCell(createHeaderCell("Payment", headerFont, navyBlue, 90, 10)); // With rotation and padding
-        table.addCell(createHeaderCell("Date", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("Seller Name", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("Weight(O)", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("Fat(O)", headerFont, navyBlue, 90, 4));
-        table.addCell(createHeaderCell("clr(O)", headerFont, navyBlue, 90, 4));
-
-        for (MilkSaleDetails milkSaleDetails : milkSaleDetailsList){
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getId().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getPaymentStatus().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getBuyerMilkWeight().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getBuyerFat().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getBuyerClr().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getFatWeight().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getFatRate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getSnfWeight().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getSnfRate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getMilkRate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getFatAmount().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getSnfAmount().toString(), cellFont)));
-            PdfPCell milkPaymentCell = new PdfPCell(new Phrase(milkSaleDetails.getMilkPayment().toString(), cellFont));
-            milkPaymentCell.setBackgroundColor(highlightColor);
-            table.addCell(milkPaymentCell);
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getDate().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getSellerName(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getMilkWeight().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getFat().toString(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(milkSaleDetails.getClr().toString(), cellFont)));
-        }
+        getMilkSaleDetailsTable(milkSaleDetailsList, table, buyerName );
 
         document.add(table);
         document.close();
 
         return new ByteArrayInputStream(baos.toByteArray());
+    }
+
+    private void getMilkDetailsTable(List<MilkDetails> milkDetailsList, PdfPTable table, String supplierName){
+        table.addCell(createHeaderCell("Sr.No.", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("Date", mdHeaderFont, navyBlue));
+        if (supplierName.isBlank()) table.addCell(createHeaderCell("Supplier Name", headerFont, navyBlue));
+        table.addCell(createHeaderCell("Weight", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("Fat", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("clr", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("Fat Weight", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("Fat Rate", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("SNF Weight", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("SNF Rate", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("Milk Rate", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("Fat Amt", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("SNF Amt", mdHeaderFont, navyBlue));
+        table.addCell(createHeaderCell("Payment", mdHeaderFont, navyBlue));
+
+        for (MilkDetails milkDetails : milkDetailsList){
+            addCellToTable(table, String.valueOf(milkDetails.getId()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getDate()), mdCellFont);
+            if (supplierName.isEmpty()) addCellToTable(table, milkDetails.getName(), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getMilkWeight()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getFat()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getClr()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getFatWeight()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getFatRate()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getSnfWeight()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getSnfRate()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getMilkRate()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getFatAmount()), mdCellFont);
+            addCellToTable(table, String.valueOf(milkDetails.getSnfAmount()), mdCellFont);
+            table.addCell(new PdfPCell(new Phrase(milkDetails.getMilkPayment().toString(), mdCellFont)) {{ setBackgroundColor(highlightColor); }});
+        }
+    }
+
+    private void getMilkSaleDetailsTable(List<MilkSaleDetails> milkSaleDetails, PdfPTable table, String buyerName) {
+        table.addCell(createHeaderCell("Date", headerFont, navyBlue, 90, 4));
+        if (buyerName.isBlank()) table.addCell(createHeaderCell("Buyer Name", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Buyer\nMilk Weight", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Buyer Fat", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Buyer clr", headerFont, navyBlue, 90, 4)); // With rotation and padding
+        table.addCell(createHeaderCell("Fat Weight", headerFont, navyBlue, 90, 0)); // With rotation and padding
+        table.addCell(createHeaderCell("Fat\nRate", headerFont, navyBlue, 90, 0));
+        table.addCell(createHeaderCell("SNF\nWeight", headerFont, navyBlue, 90, 0)); // With rotation
+        table.addCell(createHeaderCell("SNF %", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("SNF\nRate", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Milk Rate", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Fat\nAmount", headerFont, navyBlue, 90, 0)); // With rotation
+        table.addCell(createHeaderCell("SNF\nAmount", headerFont, navyBlue, 90, 0)); // With rotation
+        table.addCell(createHeaderCell("Payment", headerFont, navyBlue, 90, 10)); // With rotation and padding
+        table.addCell(createHeaderCell("Payment\nStatus", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Seller\nName", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Weight(O)", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("Fat(O)", headerFont, navyBlue, 90, 4));
+        table.addCell(createHeaderCell("clr(O)", headerFont, navyBlue, 90, 4));
+
+        for (MilkSaleDetails saleDetail : milkSaleDetails) {
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getDate().toString(), cellFont)) {{ setPadding(2.8f); }});
+            if (buyerName.isEmpty()) addCellToTable(table, saleDetail.getBuyerName(), cellFont);
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getBuyerMilkWeight().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getBuyerFat().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getBuyerClr().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getFatWeight().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getFatRate().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfWeight().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfPercent().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfRate().toString(),cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getMilkRate().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getFatAmount().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getSnfAmount().toString(), cellFont)) {{ setPadding(2.8f); }});
+            PdfPCell milkPaymentCell = new PdfPCell(new Phrase(saleDetail.getMilkPayment().toString(), cellFont)) {{ setPadding(2.8f); setBackgroundColor(highlightColor); }};
+            table.addCell(milkPaymentCell);
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getPaymentStatus().name(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getSellerName(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getMilkWeight().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getFat().toString(), cellFont)) {{ setPadding(2.8f); }});
+            table.addCell(new PdfPCell(new Phrase(saleDetail.getClr().toString(), cellFont)) {{ setPadding(2.8f); }});
+        }
+
     }
 
     // Utility method to create a table header cell

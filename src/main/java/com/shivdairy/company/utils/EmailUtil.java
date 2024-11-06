@@ -2,13 +2,28 @@ package com.shivdairy.company.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
 @Slf4j
 public class EmailUtil {
-    public static void sendEmail(String to, String subject, String htmlBody) {
+    public void sendEmailMessage(List<String> primaryRecipientList, List<String> copiedRecipientList,
+                                 List<String> hiddenRecipientList, String fromAddress, String htmlBody,
+                                 String textBody, String subject, File attachment, Boolean isBatch){
+        List<File> attachmentList = new ArrayList<>();
+        if (attachment != null) attachmentList.add(attachment);
+        this.sendEmailMessage(primaryRecipientList, copiedRecipientList, hiddenRecipientList, fromAddress, htmlBody,
+                textBody, subject, attachmentList, isBatch);
+    }
+
+
+    public void sendEmailMessage(List<String> primaryRecipientList, List<String> copiedRecipientList,
+                                        List<String> hiddenRecipientList, String fromAddress, String htmlBody,
+                                        String textBody, String subject, List<File> attachment, Boolean isBatch) {
         String from = DairyUtil.getProperty("email.from");
         String password = DairyUtil.getProperty("email.password");
 
@@ -28,7 +43,7 @@ public class EmailUtil {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+//            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(primaryRecipient));
             message.setSubject(subject);
             message.setContent(htmlBody, "text/html");
 

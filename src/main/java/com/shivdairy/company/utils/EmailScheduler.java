@@ -16,7 +16,7 @@ public class EmailScheduler {
             String subject = "Scheduled Email";
             String htmlBody = "<h1>Scheduled Email</h1><p>This is an automated email sent every 10 days.</p>";
 
-            EmailUtil.sendEmail(to, subject, htmlBody);
+//            EmailUtil.sendEmailMessage(to, subject, htmlBody);
         };
 
         scheduler.scheduleAtFixedRate(emailTask, 0, 10, TimeUnit.DAYS);

@@ -62,7 +62,7 @@ public class MilkCalcApi {
             return ResponseEntity.ok(theMilkPaymentResponse);
         } catch (Exception e) {
             log.error(environmentProperties.getProperty("milk.details.get.payment.error"), e.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, environmentProperties.getProperty("milk.details.get.payment.error") + e.getMessage(), e)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, environmentProperties.getProperty("milk.details.get.payment.error") + e.getMessage(), e);
         }
 
     }
